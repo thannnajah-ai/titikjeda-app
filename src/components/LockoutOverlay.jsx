@@ -18,12 +18,12 @@ export default function LockoutOverlay() {
           className="fixed inset-0 z-[100] bg-stone-950/90 backdrop-blur-xl text-stone-100 flex flex-col items-center justify-center px-6 text-center"
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ y: -50, scale: 0.9, opacity: 0 }}
+            animate={{ y: 0, scale: 1, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.6, bounce: 0.4, delay: 0.1 }}
             className="max-w-xl"
           >
-            <Flame className="w-16 h-16 mx-auto mb-8 text-stone-600" />
+            <Flame className="w-16 h-16 mx-auto mb-8 text-red-500 animate-pulse drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
             <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 uppercase">
               Kapasitas Otak Penuh.
             </h1>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Send } from 'lucide-react';
 import { useChatStore } from '../store/useChatStore';
 
@@ -10,6 +10,7 @@ export default function BilikKonsultasi() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isEndingSession, setIsEndingSession] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -93,7 +94,12 @@ export default function BilikKonsultasi() {
       if (data.choices && data.choices[0] && data.choices[0].message) {
         const memory = data.choices[0].message.content.trim();
         setAiMemory(memory);
-        setMessages([{ role: 'assistant', text: `[Sesi Diakhiri. Ingatan disimpan: "${memory}"] Sampai jumpa besok!` }]);
+        
+        setIsEndingSession(true);
+        setTimeout(() => {
+          setIsEndingSession(false);
+          setMessages([{ role: 'assistant', text: `[Sesi Diakhiri. Ingatan disimpan: "${memory}"] Sampai jumpa besok!` }]);
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
@@ -108,8 +114,31 @@ export default function BilikKonsultasi() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto"
+      className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto relative"
     >
+      <AnimatePresence>
+        {isEndingSession && (
+          <motion.div 
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-stone-950/60 rounded-xl"
+          >
+            <motion.div 
+              initial={{ scale: 0.8, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
+              className="flex flex-col items-center bg-stone-900 border border-stone-800 p-8 rounded-2xl shadow-2xl"
+            >
+              <span className="text-4xl mb-4 animate-pulse">🧠</span>
+              <h3 className="text-xl font-bold text-stone-100">Memori Disimpan</h3>
+              <p className="text-sm text-stone-400 mt-2 text-center">AI akan mengingat<br/>percakapan ini besok.</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="mb-6 border-b border-stone-800 pb-4 flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-stone-100">Bilik Konsultasi</h2>

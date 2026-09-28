@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
 export default function TheVoid() {
@@ -10,6 +10,7 @@ export default function TheVoid() {
   const [newPost, setNewPost] = useState('');
   const [onlineUsers, setOnlineUsers] = useState(1);
   const [channel, setChannel] = useState(null);
+  const controls = useAnimation();
 
   useEffect(() => {
     // Inisialisasi Realtime Channel
@@ -40,11 +41,16 @@ export default function TheVoid() {
     };
   }, []);
 
-  const handlePost = (e) => {
+  const handlePost = async (e) => {
     e.preventDefault();
     if (!newPost.trim()) return;
     
-    const postData = { id: Date.now(), text: newPost, hugs: 0 };
+    const textToSubmit = newPost;
+    
+    // Animasi terbang ke atas (membuang beban)
+    await controls.start({ y: -100, opacity: 0, scale: 0.9, transition: { duration: 0.3, ease: "easeIn" } });
+    
+    const postData = { id: Date.now(), text: textToSubmit, hugs: 0 };
     // Gunakan fungsi current agar selalu mendapat state terbaru
     setPosts((current) => [postData, ...current]);
     setNewPost('');
@@ -57,6 +63,11 @@ export default function TheVoid() {
         payload: postData
       });
     }
+
+    // Reset posisi form secara kasat mata
+    controls.set({ y: 50, opacity: 0, scale: 0.9 });
+    // Animasi muncul kembali
+    controls.start({ y: 0, opacity: 1, scale: 1, transition: { type: "spring", bounce: 0.4, duration: 0.5 } });
   };
 
   const handleHug = (id) => {
@@ -90,7 +101,7 @@ export default function TheVoid() {
         <p className="text-stone-400">Lempar rasa lelahmu ke kehampaan. Anonim, aman, dan akan menghilang seiring waktu.</p>
       </div>
 
-      <form onSubmit={handlePost} className="relative">
+      <motion.form animate={controls} onSubmit={handlePost} className="relative">
         <textarea 
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
@@ -106,7 +117,7 @@ export default function TheVoid() {
             Lepaskan
           </button>
         </div>
-      </form>
+      </motion.form>
 
       <div className="space-y-4">
         <AnimatePresence>
