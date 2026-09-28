@@ -25,7 +25,10 @@ export default function LockerRoom() {
           <div key={i} className="p-6 rounded-2xl bg-stone-900 border border-stone-800/50 hover:bg-stone-800 transition-all hover:border-stone-700/50">
             <h3 className="font-semibold text-lg mb-2 text-stone-100">{item.title}</h3>
             <p className="text-sm text-stone-300 leading-relaxed mb-4">{item.desc}</p>
-            <button className="text-sm font-medium text-stone-400 hover:text-stone-200 underline underline-offset-4 decoration-stone-700 hover:decoration-stone-400 transition-colors">
+            <button 
+              onClick={() => alert('Materi Cheat-Sheet untuk ' + item.title + ' sedang disusun. Nantikan update berikutnya!')}
+              className="text-sm font-medium text-stone-400 hover:text-stone-200 underline underline-offset-4 decoration-stone-700 hover:decoration-stone-400 transition-colors"
+            >
               Lihat Cheat-Sheet
             </button>
           </div>

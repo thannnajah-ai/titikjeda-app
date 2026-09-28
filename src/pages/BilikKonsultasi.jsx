@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
+import { useChatStore } from '../store/useChatStore';
 
 export default function BilikKonsultasi() {
+  const { aiMemory, setAiMemory } = useChatStore();
   const [messages, setMessages] = useState([
     { role: 'assistant', text: 'Halo. Aku Kakak tingkatmu. Nggak usah bahas belajar dulu kalau kamu lagi capek. Ada apa hari ini?' }
   ]);
@@ -24,6 +26,8 @@ export default function BilikKonsultasi() {
     setIsLoading(true);
 
     try {
+      const systemPrompt = `Kamu adalah kating untuk curhat capek belajar/UTBK. Aturan: 1) Balas SINGKAT (1-3 kalimat). 2) JANGAN LEBAY, maks 1 emoji. 3) Bahasa gaul santai (gue/lu). 4) BATASAN TOPIK: Jika user bahas hal di luar sekolah (cinta, politik), alihkan kembali ke sekolah/UTBK secara halus. 5) PROTOKOL KRISIS (SANGAT PENTING): Jika user menyebut hal berbahaya (narkoba, bunuh diri, kekerasan, kejahatan), JANGAN pakai emoji satupun. JANGAN alihkan ke pelajaran karena itu konyol/ngelantur. Langsung berikan respons SERIUS dan tegas menyuruhnya mencari bantuan profesional/orang terdekat. Contoh: "Bro, gue cuma AI, tapi itu urusan yang bahaya dan serius banget. Tolong jangan lakuin itu dan cari bantuan profesional atau cerita ke orang dewasa yang lu percaya. Gue nggak bisa bantu kalau urusan begini."${aiMemory ? `\n6) PENTING! MEMORI SESI SEBELUMNYA: "${aiMemory}". Gunakan konteks ini untuk menjawab seakan-akan kamu mengingat obrolan kalian sebelumnya agar terasa lebih personal.` : ''}`;
+
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -35,10 +39,7 @@ export default function BilikKonsultasi() {
         body: JSON.stringify({
           model: 'inclusionai/ling-3.0-flash-fin:free',
           messages: [
-            { 
-              role: 'system', 
-              content: 'Kamu adalah kating untuk curhat capek belajar/UTBK. Aturan: 1) Balas SINGKAT (1-3 kalimat). 2) JANGAN LEBAY, maks 1 emoji. 3) Bahasa gaul santai (gue/lu). 4) BATASAN TOPIK: Jika user bahas hal di luar sekolah (cinta, politik), alihkan kembali ke sekolah/UTBK secara halus. 5) PROTOKOL KRISIS (SANGAT PENTING): Jika user menyebut hal berbahaya (narkoba, bunuh diri, kekerasan, kejahatan), JANGAN pakai emoji satupun. JANGAN alihkan ke pelajaran karena itu konyol/ngelantur. Langsung berikan respons SERIUS dan tegas menyuruhnya mencari bantuan profesional/orang terdekat. Contoh: "Bro, gue cuma AI, tapi itu urusan yang bahaya dan serius banget. Tolong jangan lakuin itu dan cari bantuan profesional atau cerita ke orang dewasa yang lu percaya. Gue nggak bisa bantu kalau urusan begini."' 
-            },
+            { role: 'system', content: systemPrompt },
             ...messages.map(m => ({ role: m.role, content: m.text })),
             { role: 'user', content: userMessage }
           ]
@@ -64,6 +65,44 @@ export default function BilikKonsultasi() {
     }
   };
 
+  const handleEndSession = async () => {
+    if (messages.length <= 1) return; // Belum ada obrolan
+    setIsLoading(true);
+    
+    try {
+      const summaryPrompt = "Berdasarkan seluruh percakapan kita di atas, berikan HANYA 1 KALIMAT SINGKAT yang merangkum kondisi mental/belajar anak ini (contoh: 'Anak ini trauma dengan Matematika tapi masih semangat', atau 'Dia sedang sangat lelah karena tryout hancur'). Jangan tambahkan kata-kata lain selain ringkasan 1 kalimat tersebut.";
+      
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'TitikJeda'
+        },
+        body: JSON.stringify({
+          model: 'inclusionai/ling-3.0-flash-fin:free',
+          messages: [
+            ...messages.map(m => ({ role: m.role, content: m.text })),
+            { role: 'user', content: summaryPrompt }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        const memory = data.choices[0].message.content.trim();
+        setAiMemory(memory);
+        setMessages([{ role: 'assistant', text: `[Sesi Diakhiri. Ingatan disimpan: "${memory}"] Sampai jumpa besok!` }]);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Gagal mengakhiri sesi: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -71,9 +110,18 @@ export default function BilikKonsultasi() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto"
     >
-      <div className="mb-6 border-b border-stone-800 pb-4">
-        <h2 className="text-2xl font-bold tracking-tight text-stone-100">Bilik Konsultasi</h2>
-        <p className="text-sm text-stone-400">Privat. AI ini diinstruksikan untuk berempati, bukan menggurui.</p>
+      <div className="mb-6 border-b border-stone-800 pb-4 flex justify-between items-end">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-stone-100">Bilik Konsultasi</h2>
+          <p className="text-sm text-stone-400">Privat. AI ini diinstruksikan untuk berempati, bukan menggurui.</p>
+        </div>
+        <button 
+          onClick={handleEndSession}
+          disabled={isLoading || messages.length <= 1}
+          className="text-xs px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded border border-stone-700 transition-colors disabled:opacity-50"
+        >
+          Akhiri Sesi & Simpan
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto mb-6 pr-2 space-y-6 scrollbar-hide">
