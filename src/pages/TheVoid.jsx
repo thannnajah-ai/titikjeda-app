@@ -101,7 +101,7 @@ export default function TheVoid() {
           <button 
             type="submit"
             disabled={!newPost.trim()}
-            className="px-6 py-2 bg-stone-400 text-stone-950 hover:bg-stone-300 font-semibold rounded-full disabled:opacity-50 transition-colors"
+            className="px-6 py-2 bg-stone-400 text-stone-950 hover:bg-stone-300 font-semibold rounded-full active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50"
           >
             Lepaskan
           </button>

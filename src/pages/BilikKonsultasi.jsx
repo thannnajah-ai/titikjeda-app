@@ -118,7 +118,7 @@ export default function BilikKonsultasi() {
         <button 
           onClick={handleEndSession}
           disabled={isLoading || messages.length <= 1}
-          className="text-xs px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded border border-stone-700 transition-colors disabled:opacity-50"
+          className="text-xs px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded border border-stone-700 active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50"
         >
           Akhiri Sesi & Simpan
         </button>
@@ -126,7 +126,13 @@ export default function BilikKonsultasi() {
 
       <div className="flex-1 overflow-y-auto mb-6 pr-2 space-y-6 scrollbar-hide">
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
             <div 
               className={`max-w-[85%] rounded-2xl px-5 py-3.5 leading-relaxed
                 ${msg.role === 'user' 
@@ -136,16 +142,21 @@ export default function BilikKonsultasi() {
             >
               {msg.text}
             </div>
-          </div>
+          </motion.div>
         ))}
         {isLoading && (
-          <div className="flex justify-start">
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="flex justify-start"
+          >
             <div className="bg-stone-900 border border-stone-800 rounded-2xl px-5 py-3.5 flex gap-1">
               <span className="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce"></span>
               <span className="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
               <span className="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
             </div>
-          </div>
+          </motion.div>
         )}
         <div ref={bottomRef} />
       </div>
@@ -162,7 +173,7 @@ export default function BilikKonsultasi() {
         <button 
           type="submit"
           disabled={!input.trim() || isLoading}
-          className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-stone-400 hover:bg-stone-300 text-stone-950 rounded-full disabled:opacity-50 transition-colors"
+          className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-stone-400 hover:bg-stone-300 text-stone-950 rounded-full active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50"
         >
           <Send className="w-4 h-4 ml-[-2px]" />
         </button>
