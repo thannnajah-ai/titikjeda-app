@@ -38,7 +38,7 @@ export default function BilikKonsultasi() {
           'X-Title': 'TitikJeda'
         },
         body: JSON.stringify({
-          model: 'inclusionai/ling-3.0-flash-fin:free',
+          model: 'nvidia/nemotron-3.5-lightning:free',
           messages: [
             { role: 'system', content: systemPrompt },
             ...messages.map(m => ({ role: m.role, content: m.text })),
@@ -60,7 +60,10 @@ export default function BilikKonsultasi() {
       }
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', text: `MAAF, SISTEM ERROR: ${error.message}` }]);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        text: 'Santai dulu, jangan terlalu keras sama diri sendiri. Tarik napas panjang, minum air dulu. Ceritain pelan-pelan apa yang bikin kamu paling cemas hari ini.' 
+      }]);
     } finally {
       setIsLoading(false);
     }

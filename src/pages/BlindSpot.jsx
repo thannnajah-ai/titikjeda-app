@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Target, TrendingDown } from 'lucide-react';
 
+const generateFallbackRoasting = (scoreNum, campusTarget) => {
+  if (scoreNum >= 700) {
+    return `Skor lu ${scoreNum} udah masuk kategori tinggi, tapi persaingan ke ${campusTarget} itu medan pembantaian sesungguhnya. Jangan terlena sama nilai tryout di atas kertas. Terapkan prinsip Pareto 80/20: sikat habis 20% tipe soal paling krusial di Penalaran Matematika dan Literasi Inggris yang punya bobot IRT pembeda ranking. Jaga ritme, lengah sehari lu bisa kegusur ratusan orang.`;
+  } else if (scoreNum >= 550) {
+    return `Skor ${scoreNum} buat tembus ${campusTarget} masih di zona rawan. Lu masih sering buang-buang waktu berkutat di 80% materi receh yang jarang keluar. Mulai sekarang fokus ke 20% materi dengan frekuensi kemunculan tertinggi (Kalkulus dasar, Silogisme kategorial, & Kalimat Efektif PUEBI) biar skor lu terdongkrak ke 680+.`;
+  } else {
+    return `Dengan skor ${scoreNum}, impian masuk ${campusTarget} bakal tinggal angan-angan kalau pola belajar lu masih pasif kayak zombie scrolling. Lu kehilangan poin di soal-soal fundamental yang seharusnya jadi lumbung nilai termudah. Berhenti coba-coba soal tingkat dewa, kuasai dulu 20% rumus dasar Pareto yang PASTI keluar di UTBK!`;
+  }
+};
+
 export default function BlindSpot() {
   const [score, setScore] = useState('');
   const [campus, setCampus] = useState('');
@@ -14,12 +24,12 @@ export default function BlindSpot() {
 
     setLoading(true);
     try {
-      const prompt = `User adalah siswa UTBK. Skor TO terakhir: ${score}. Target kampus/jurusan: ${campus}.
-Tugas lu: Kasih tamparan realita yang obyektif dan instruksi Pareto 80/20. Jika skornya kurang jauh, bilang secara brutal bahwa dia harus kejar materi spesifik. 
-Syarat:
-1. Singkat (Maksimal 3-4 kalimat).
-2. Gaya bahasa lu gue (kating galak tapi peduli).
-3. Jangan pakai emoji berlebihan.`;
+      const prompt = `User adalah siswa pejuang UTBK/SNBT. Skor TO terakhir: ${score}. Target kampus & jurusan: ${campus}.
+Tugas kamu: Berikan tamparan realita yang objektif, tajam, dan instruksi taktis Pareto 80/20.
+Aturan:
+1. Singkat padat (maksimal 3-4 kalimat).
+2. Gaya bahasa kasual gue/lu (seperti kakak tingkat galak tapi peduli dan realistis).
+3. Tanpa basa-basi dan tanpa emoji berlebihan.`;
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -30,17 +40,21 @@ Syarat:
           'X-Title': 'TitikJeda'
         },
         body: JSON.stringify({
-          model: 'inclusionai/ling-3.0-flash-fin:free',
+          model: 'nvidia/nemotron-3.5-lightning:free',
           messages: [{ role: 'system', content: prompt }]
         })
       });
 
       const data = await response.json();
-      if (data.choices && data.choices[0] && data.choices[0].message) {
+      if (response.ok && data.choices && data.choices[0]?.message?.content) {
         setResult(data.choices[0].message.content.trim());
+      } else {
+        throw new Error(data.error?.message || "Model error");
       }
     } catch (error) {
-      setResult('Error menghubungi AI. Lu lagi hoki nggak diroasting.');
+      console.warn("AI generation fallback triggered:", error);
+      // Gunakan fallback cerdas berbasis aturan jika API OpenRouter sibuk/error
+      setResult(generateFallbackRoasting(Number(score), campus));
     } finally {
       setLoading(false);
     }
