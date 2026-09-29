@@ -858,6 +858,58 @@ export default function AdminPanel() {
               [HAPUS MEMORI AI]
             </button>
           </div>
+
+          {/* Heatmap & Streak Simulator */}
+          <div className="bg-white border-4 md:border-8 border-zinc-950 p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black text-lg uppercase text-zinc-950 mb-2 flex items-center gap-2">
+              <Flame className="w-5 h-5 text-amber-500" />
+              KENDALI HEATMAP & STREAK DISIPLIN
+            </h3>
+            <p className="text-xs text-zinc-600 font-bold uppercase mb-4">
+              Uji coba dan simulasikan status kedisiplinan pada grid heatmap 12 minggu.
+            </p>
+            <div className="flex flex-wrap gap-2.5">
+              <button 
+                onClick={() => {
+                  const todayKey = new Date().toISOString().split('T')[0];
+                  useAppStore.getState().recordHabitDate(todayKey, 'passed');
+                  alert("Hari ini diset LOLOS di Heatmap!");
+                }}
+                className="bg-zinc-950 text-white font-black px-3 py-1.5 text-xs uppercase cursor-pointer"
+              >
+                [SET HARI INI: LOLOS]
+              </button>
+              <button 
+                onClick={() => {
+                  const todayKey = new Date().toISOString().split('T')[0];
+                  useAppStore.getState().recordHabitDate(todayKey, 'alibi');
+                  alert("Hari ini diset ALIBI di Heatmap!");
+                }}
+                className="bg-amber-400 text-black font-black px-3 py-1.5 text-xs uppercase cursor-pointer"
+              >
+                [SET HARI INI: ALIBI]
+              </button>
+              <button 
+                onClick={() => {
+                  const todayKey = new Date().toISOString().split('T')[0];
+                  useAppStore.getState().recordHabitDate(todayKey, 'failed');
+                  alert("Hari ini diset GAGAL di Heatmap!");
+                }}
+                className="bg-red-600 text-white font-black px-3 py-1.5 text-xs uppercase cursor-pointer"
+              >
+                [SET HARI INI: GAGAL]
+              </button>
+              <button 
+                onClick={() => {
+                  useAppStore.getState().clearHabitHistory();
+                  alert("Rekam jejak Heatmap telah dikosongkan!");
+                }}
+                className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-black px-3 py-1.5 text-xs uppercase cursor-pointer"
+              >
+                [KOSONGKAN HEATMAP]
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

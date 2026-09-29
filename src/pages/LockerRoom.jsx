@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAppStore } from '../store/useAppStore';
 import { X, BookOpen, AlertTriangle } from 'lucide-react';
+import HabitHeatmap from '../components/HabitHeatmap';
+import SoundscapeMixer from '../components/SoundscapeMixer';
 
 const CHEAT_SHEETS = [
   {
@@ -186,6 +188,26 @@ export default function LockerRoom() {
           </div>
         </motion.div>
       )}
+
+      {/* Heatmap Konsistensi & Streak Disiplin */}
+      <motion.div 
+        variants={{
+          hidden: { opacity: 0, y: 10 },
+          show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } }
+        }}
+      >
+        <HabitHeatmap />
+      </motion.div>
+
+      {/* Soundscape & Binaural Beats Synthesizer */}
+      <motion.div 
+        variants={{
+          hidden: { opacity: 0, y: 10 },
+          show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } }
+        }}
+      >
+        <SoundscapeMixer />
+      </motion.div>
 
       <motion.div 
         variants={{

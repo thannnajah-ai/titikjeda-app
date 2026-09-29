@@ -13,15 +13,57 @@ export const useAppStore = create(
       dailyStatus: null, // 'passed' | 'failed' | null
       alibiLogs: [], // [{ date, text }]
       hasDoneAlibiToday: false,
+      habitHistory: {
+        // Formatted 'YYYY-MM-DD': 'passed' | 'failed' | 'alibi'
+        [new Date(Date.now() - 86400000 * 1).toISOString().split('T')[0]]: 'passed',
+        [new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0]]: 'passed',
+        [new Date(Date.now() - 86400000 * 4).toISOString().split('T')[0]]: 'alibi',
+        [new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0]]: 'passed',
+        [new Date(Date.now() - 86400000 * 7).toISOString().split('T')[0]]: 'failed',
+        [new Date(Date.now() - 86400000 * 8).toISOString().split('T')[0]]: 'passed',
+        [new Date(Date.now() - 86400000 * 10).toISOString().split('T')[0]]: 'passed',
+        [new Date(Date.now() - 86400000 * 12).toISOString().split('T')[0]]: 'alibi',
+        [new Date(Date.now() - 86400000 * 14).toISOString().split('T')[0]]: 'passed',
+      },
 
       // Actions
       setOathSignature: (sig) => set({ oathSignature: sig }),
       setLastAnswerDate: (date) => set({ lastAnswerDate: date }),
-      setDailyStatus: (status) => set({ dailyStatus: status }),
-      addAlibiLog: (log) => set((state) => ({ 
-        alibiLogs: [...state.alibiLogs, log],
-        hasDoneAlibiToday: true 
-      })),
+      setDailyStatus: (status) => set((state) => {
+        const todayKey = new Date().toISOString().split('T')[0];
+        const newHistory = { ...state.habitHistory };
+        if (status) {
+          newHistory[todayKey] = status;
+        } else {
+          delete newHistory[todayKey];
+        }
+        return { 
+          dailyStatus: status,
+          habitHistory: newHistory
+        };
+      }),
+      addAlibiLog: (log) => set((state) => {
+        const todayKey = new Date().toISOString().split('T')[0];
+        const newHistory = { ...state.habitHistory };
+        if (!newHistory[todayKey] || newHistory[todayKey] !== 'passed') {
+          newHistory[todayKey] = 'alibi';
+        }
+        return { 
+          alibiLogs: [...state.alibiLogs, log],
+          hasDoneAlibiToday: true,
+          habitHistory: newHistory
+        };
+      }),
+      recordHabitDate: (dateStr, status) => set((state) => {
+        const newHistory = { ...state.habitHistory };
+        if (status) {
+          newHistory[dateStr] = status;
+        } else {
+          delete newHistory[dateStr];
+        }
+        return { habitHistory: newHistory };
+      }),
+      clearHabitHistory: () => set({ habitHistory: {} }),
       resetAlibiStatus: () => set({ hasDoneAlibiToday: false }),
       clearAlibiLogs: () => set({ alibiLogs: [] }),
 
@@ -43,7 +85,8 @@ export const useAppStore = create(
         lastAnswerDate: state.lastAnswerDate,
         dailyStatus: state.dailyStatus,
         alibiLogs: state.alibiLogs,
-        hasDoneAlibiToday: state.hasDoneAlibiToday
+        hasDoneAlibiToday: state.hasDoneAlibiToday,
+        habitHistory: state.habitHistory
       }) // Only persist these
     }
   )
