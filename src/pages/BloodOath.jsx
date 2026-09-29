@@ -2,14 +2,17 @@ import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import SignatureCanvas from 'react-signature-canvas';
 import { useNavigate } from 'react-router-dom';
+import { Camera } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { supabase } from '../lib/supabase';
+import StoryCardModal from '../components/StoryCardModal';
 
 export default function BloodOath() {
   const sigCanvas = useRef(null);
   const navigate = useNavigate();
   const setOathSignature = useAppStore(state => state.setOathSignature);
   const oathSignature = useAppStore(state => state.oathSignature);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
   
   // If already signed, show the Certificate Mode instead of the signing form
   if (oathSignature) {
@@ -25,12 +28,29 @@ export default function BloodOath() {
           <img src={oathSignature} alt="Tanda Tangan" className="h-24 md:h-32 object-contain mix-blend-multiply" />
         </div>
         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Sah dan Permanen</p>
-        <button 
-          onClick={() => navigate('/')}
-          className="mt-8 md:mt-12 w-full bg-zinc-950 text-white font-black py-4 uppercase tracking-widest active:scale-97"
-        >
-          Kembali ke Loker
-        </button>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full mt-8 md:mt-12">
+          <button
+            onClick={() => setIsStoryModalOpen(true)}
+            className="flex-1 bg-amber-400 hover:bg-amber-500 text-zinc-950 font-black py-3.5 uppercase tracking-widest text-xs border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer font-mono"
+          >
+            <Camera className="w-4 h-4" />
+            <span>KARTU STORY (PNG)</span>
+          </button>
+          <button 
+            onClick={() => navigate('/')}
+            className="flex-1 bg-zinc-950 hover:bg-zinc-800 text-white font-black py-3.5 uppercase tracking-widest text-xs border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:scale-95 transition-transform cursor-pointer font-mono"
+          >
+            Kembali ke Loker
+          </button>
+        </div>
+
+        <StoryCardModal
+          isOpen={isStoryModalOpen}
+          onClose={() => setIsStoryModalOpen(false)}
+          type="oath"
+          data={{ oathSignature }}
+        />
       </div>
     );
   }

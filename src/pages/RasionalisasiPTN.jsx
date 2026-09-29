@@ -12,10 +12,12 @@ import {
   Sliders, 
   Check, 
   Sparkles,
-  School
+  School,
+  Camera
 } from 'lucide-react';
 import { PTN_DATABASE, evaluatePtnChance } from '../data/ptnDatabase';
 import { useAppStore } from '../store/useAppStore';
+import StoryCardModal from '../components/StoryCardModal';
 
 export default function RasionalisasiPTN() {
   const tryoutHistory = useAppStore(state => state.tryoutHistory) || [];
@@ -31,6 +33,7 @@ export default function RasionalisasiPTN() {
   const [selectedKampus, setSelectedKampus] = useState('ALL');
   const [selectedMajorId, setSelectedMajorId] = useState(PTN_DATABASE[0].id);
   const [syncedTargetNotice, setSyncedTargetNotice] = useState(false);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
 
   // Unique Campus List for dropdown
   const kampusList = ['ALL', ...Array.from(new Set(PTN_DATABASE.map(p => p.kampusSingkat)))];
@@ -300,26 +303,37 @@ export default function RasionalisasiPTN() {
             </div>
 
             {/* Set As Target Sumpah Darah Button */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-              <button
-                onClick={handleSetTarget}
-                className="w-full sm:w-auto bg-zinc-950 hover:bg-zinc-800 text-white font-black px-6 py-3.5 text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer border-2 border-zinc-950 active:scale-95 transition-transform"
-              >
-                {syncedTargetNotice ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span>TARGET BERHASIL DISINKRON!</span>
-                  </>
-                ) : (
-                  <>
-                    <Target className="w-4 h-4 text-amber-400" />
-                    <span>JADIKAN TARGET SUMPAH DARAH</span>
-                  </>
-                )}
-              </button>
+            {/* Set As Target Sumpah Darah & Poster Button */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={handleSetTarget}
+                  className="flex-1 sm:flex-none bg-zinc-950 hover:bg-zinc-800 text-white font-black px-5 py-3.5 text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer border-2 border-zinc-950 active:scale-95 transition-transform"
+                >
+                  {syncedTargetNotice ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-400" />
+                      <span>TARGET BERHASIL DISINKRON!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Target className="w-4 h-4 text-amber-400" />
+                      <span>JADIKAN TARGET SUMPAH</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setIsStoryModalOpen(true)}
+                  className="flex-1 sm:flex-none bg-amber-400 hover:bg-amber-500 text-zinc-950 font-black px-4 py-3.5 text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer border-2 border-zinc-950 active:scale-95 transition-transform shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span>KARTU TARGET (PNG)</span>
+                </button>
+              </div>
 
               <span className="text-[10px] text-zinc-500 font-bold uppercase text-center sm:text-right">
-                Otomatis mengunci target di Spartan HUD bilah atas aplikasi.
+                Otomatis mengunci target di Spartan HUD bilah atas.
               </span>
             </div>
           </div>
@@ -348,6 +362,14 @@ export default function RasionalisasiPTN() {
           )}
         </div>
       </div>
+
+      {/* Story & Poster Generator Modal */}
+      <StoryCardModal
+        isOpen={isStoryModalOpen}
+        onClose={() => setIsStoryModalOpen(false)}
+        type="ptn"
+        data={activeMajor}
+      />
     </div>
   );
 }

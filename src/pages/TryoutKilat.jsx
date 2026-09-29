@@ -17,12 +17,14 @@ import {
   Check, 
   BookOpen,
   Volume2,
-  VolumeX
+  VolumeX,
+  Camera
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { SPRINT_QUESTIONS, calculateIrtScore } from '../data/sprintQuestions';
 import { useAppStore } from '../store/useAppStore';
 import soundEngine from '../lib/soundEngine';
+import StoryCardModal from '../components/StoryCardModal';
 
 const TOTAL_TIME_SECONDS = 600; // 10 menit
 
@@ -38,6 +40,7 @@ export default function TryoutKilat() {
   const [showAllExplanations, setShowAllExplanations] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
   const [isClockTicking, setIsClockTicking] = useState(false);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
 
   const saveTryoutResult = useAppStore(state => state.saveTryoutResult);
   const recordMistakes = useAppStore(state => state.recordMistakes);
@@ -536,13 +539,20 @@ export default function TryoutKilat() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setIsStoryModalOpen(true)}
+              className="bg-amber-400 hover:bg-amber-500 text-zinc-950 border-4 border-zinc-950 px-4 py-2.5 text-xs font-black uppercase flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+            >
+              <Camera className="w-4 h-4 text-zinc-950" />
+              <span>POSTER / STORY (PNG)</span>
+            </button>
             <button
               onClick={handleShare}
               className="bg-white hover:bg-zinc-100 border-4 border-zinc-950 px-4 py-2.5 text-xs font-black uppercase flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
             >
               {copiedShare ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
-              <span>{copiedShare ? 'TERSALIN!' : 'BAGIKAN RAPOR'}</span>
+              <span>{copiedShare ? 'TERSALIN!' : 'BAGIKAN TEKS'}</span>
             </button>
             <button
               onClick={handleStartExam}
@@ -796,6 +806,17 @@ export default function TryoutKilat() {
             })}
           </div>
         </div>
+
+        {/* Story & Poster Generator Modal */}
+        <StoryCardModal
+          isOpen={isStoryModalOpen}
+          onClose={() => setIsStoryModalOpen(false)}
+          type="tryout"
+          data={{
+            ...latestResult,
+            timeFormatted: formatTime(timeSpent)
+          }}
+        />
       </div>
     );
   }
