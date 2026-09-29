@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { supabase } from '../lib/supabase';
 import { getDailyQuestion } from '../data/dailyQuestions';
+import { useAdminStore } from '../store/useAdminStore';
 import { HelpCircle, CheckCircle2, AlertOctagon, RotateCcw } from 'lucide-react';
 
 export default function OneQuestion() {
@@ -14,9 +15,11 @@ export default function OneQuestion() {
   const setLastAnswerDate = useAppStore(state => state.setLastAnswerDate);
   const dailyStatus = useAppStore(state => state.dailyStatus);
   const lastAnswerDate = useAppStore(state => state.lastAnswerDate);
+  const customQuestions = useAdminStore(state => state.customQuestions);
+  const forcedQuestionId = useAdminStore(state => state.forcedQuestionId);
   const today = new Date().toLocaleDateString('id-ID');
 
-  const currentQuestion = getDailyQuestion();
+  const currentQuestion = getDailyQuestion(null, customQuestions, forcedQuestionId);
 
   useEffect(() => {
     // Hanya hitung mundur jika belum dihukum dan belum lolos

@@ -220,7 +220,14 @@ export const DAILY_QUESTIONS = [
   }
 ];
 
-export function getDailyQuestion(dateStr) {
+export function getDailyQuestion(dateStr, customQuestions = [], forcedQuestionId = null) {
+  const allQuestions = [...DAILY_QUESTIONS, ...(customQuestions || [])];
+  
+  if (forcedQuestionId) {
+    const forced = allQuestions.find(q => q.id === forcedQuestionId);
+    if (forced) return forced;
+  }
+
   // Deterministic daily rotation using day-of-year
   const d = dateStr ? new Date(dateStr) : new Date();
   const start = new Date(d.getFullYear(), 0, 0);
@@ -228,6 +235,6 @@ export function getDailyQuestion(dateStr) {
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay);
   
-  const index = Math.abs(dayOfYear) % DAILY_QUESTIONS.length;
-  return DAILY_QUESTIONS[index];
+  const index = Math.abs(dayOfYear) % allQuestions.length;
+  return allQuestions[index] || DAILY_QUESTIONS[0];
 }
