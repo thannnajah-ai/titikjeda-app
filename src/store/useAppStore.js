@@ -82,6 +82,45 @@ export const useAppStore = create(
         };
       }),
 
+      // Buku Dosa (Error Logbook)
+      errorLog: [],
+      recordMistakes: (mistakes) => set((state) => {
+        if (!Array.isArray(mistakes) || mistakes.length === 0) return {};
+        const existing = [...state.errorLog];
+        mistakes.forEach((m) => {
+          const idx = existing.findIndex((e) => e.id === m.id);
+          if (idx >= 0) {
+            existing[idx] = {
+              ...existing[idx],
+              ...m,
+              timesFailed: (existing[idx].timesFailed || 1) + 1,
+              status: 'unresolved',
+              lastFailedAt: new Date().toISOString()
+            };
+          } else {
+            existing.unshift({
+              ...m,
+              status: 'unresolved',
+              timesFailed: 1,
+              timesRedeemed: 0,
+              failedAt: new Date().toISOString()
+            });
+          }
+        });
+        return { errorLog: existing };
+      }),
+      redeemMistake: (id) => set((state) => ({
+        errorLog: state.errorLog.map((item) =>
+          item.id === id
+            ? { ...item, status: 'redeemed', timesRedeemed: (item.timesRedeemed || 0) + 1, redeemedAt: new Date().toISOString() }
+            : item
+        )
+      })),
+      removeMistake: (id) => set((state) => ({
+        errorLog: state.errorLog.filter((item) => item.id !== id)
+      })),
+      clearErrorLog: () => set({ errorLog: [] }),
+
       // Spartan Target & PTN Goal
       targetPTN: 'STEI ITB - REKAYASA PERANGKAT LUNAK',
       targetScore: 735,
@@ -109,7 +148,8 @@ export const useAppStore = create(
         habitHistory: state.habitHistory,
         tryoutHistory: state.tryoutHistory,
         targetPTN: state.targetPTN,
-        targetScore: state.targetScore
+        targetScore: state.targetScore,
+        errorLog: state.errorLog
       }) // Only persist these
     }
   )

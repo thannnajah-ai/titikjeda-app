@@ -5,12 +5,12 @@ export const useAdminStore = create(
   persist(
     (set) => ({
       isAuthenticated: false,
-      adminPin: 'TITIKJEDA2026',
+      adminPin: 'MUALLIMIN2026',
       adminAnnouncement: 'WARTA PUSAT: H-60 UTBK 2026. PERKETAT DISIPLIN, JANGAN ADA YANG KENDOR.',
       isAnnouncementActive: true,
       customQuestions: [], // Soal tambahan dari admin
       forcedQuestionId: null, // Override ID soal yang aktif hari ini
-      
+
       // Auth Actions
       login: (pin) => {
         if (pin === useAdminStore.getState().adminPin) {
@@ -23,12 +23,12 @@ export const useAdminStore = create(
       setAdminPin: (newPin) => set({ adminPin: newPin }),
 
       // Announcement Actions
-      setAnnouncement: (text, active = true) => set({ 
-        adminAnnouncement: text, 
-        isAnnouncementActive: active 
+      setAnnouncement: (text, active = true) => set({
+        adminAnnouncement: text,
+        isAnnouncementActive: active
       }),
-      toggleAnnouncement: () => set((state) => ({ 
-        isAnnouncementActive: !state.isAnnouncementActive 
+      toggleAnnouncement: () => set((state) => ({
+        isAnnouncementActive: !state.isAnnouncementActive
       })),
 
       // Question Management Actions

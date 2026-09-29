@@ -15,6 +15,7 @@ const TheVoid = lazy(() => import('./pages/TheVoid'));
 const BilikKonsultasi = lazy(() => import('./pages/BilikKonsultasi'));
 const BloodOath = lazy(() => import('./pages/BloodOath'));
 const OneQuestion = lazy(() => import('./pages/OneQuestion'));
+const BukuDosa = lazy(() => import('./pages/BukuDosa'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 
 function ModuleLoadingFallback() {
@@ -45,6 +46,7 @@ export default function App() {
             <Route index element={<LockerRoom />} />
             <Route path="rasionalisasi" element={<RasionalisasiPTN />} />
             <Route path="tryout" element={<TryoutKilat />} />
+            <Route path="dosa" element={<BukuDosa />} />
             <Route path="bedah" element={<DeconstructSoal />} />
             <Route path="streak" element={<StreakPage />} />
             <Route path="void" element={<TheVoid />} />

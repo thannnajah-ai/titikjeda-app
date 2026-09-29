@@ -40,6 +40,7 @@ export default function TryoutKilat() {
   const [isClockTicking, setIsClockTicking] = useState(false);
 
   const saveTryoutResult = useAppStore(state => state.saveTryoutResult);
+  const recordMistakes = useAppStore(state => state.recordMistakes);
   const tryoutHistory = useAppStore(state => state.tryoutHistory) || [];
 
   const timerRef = useRef(null);
@@ -124,6 +125,24 @@ export default function TryoutKilat() {
       answers,
       timeSpentSeconds: timeSpent
     });
+
+    // Record wrong / unattempted questions into Buku Dosa
+    const wrongQuestions = SPRINT_QUESTIONS.filter(q => answers[q.id] !== q.correctIndex).map(q => ({
+      id: `sprint-${q.id}`,
+      originalId: q.id,
+      source: 'Tryout Kilat',
+      code: q.code,
+      subject: q.subject,
+      subtopic: q.subtopic,
+      question: q.question,
+      options: q.options,
+      correctIndex: q.correctIndex,
+      userSelected: answers[q.id] ?? null,
+      explanation: q.explanation
+    }));
+    if (wrongQuestions.length > 0) {
+      recordMistakes(wrongQuestions);
+    }
 
     setLatestResult(result);
     saveTryoutResult({
@@ -605,6 +624,29 @@ export default function TryoutKilat() {
             <span>Skor di bawah 600 belum memenuhi syarat proteksi streak otomatis. Selesaikan '1 Soal Sehari' untuk menyelamatkan streak!</span>
             <NavLink to="/one" className="text-red-600 font-black underline ml-2 shrink-0">
               KERJAKAN 1 SOAL →
+            </NavLink>
+          </div>
+        )}
+
+        {/* Buku Dosa Automatic Logging Banner */}
+        {latestResult.wrongCount > 0 && (
+          <div className="bg-red-50 border-4 border-red-600 p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="w-3 h-3 bg-red-600 rounded-none animate-ping shrink-0"></span>
+              <div>
+                <h4 className="font-black text-sm uppercase text-red-950">
+                  [BUKU DOSA] {latestResult.wrongCount} SOAL MASUK KE LOGBOOK KELEMAHAN
+                </h4>
+                <p className="text-xs text-red-800 font-bold uppercase mt-0.5">
+                  Jangan ulangi kesalahan yang sama di hari H. Tebus kelemahanmu sekarang.
+                </p>
+              </div>
+            </div>
+            <NavLink
+              to="/dosa"
+              className="bg-red-600 hover:bg-red-700 text-white font-black px-4 py-2 text-xs uppercase tracking-widest border-2 border-zinc-950 shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 transition-transform"
+            >
+              TEBUS DOSA SEKARANG ↗
             </NavLink>
           </div>
         )}

@@ -158,6 +158,7 @@ export const useAuthStore = create((set, get) => ({
         habitHistory: appState.habitHistory,
         lastAnswerDate: appState.lastAnswerDate,
         dailyStatus: appState.dailyStatus,
+        errorLog: appState.errorLog || [],
         syncedAt: new Date().toISOString()
       };
 
@@ -217,6 +218,18 @@ export const useAuthStore = create((set, get) => ({
         if (newRuns.length > 0) {
           useAppStore.setState({
             tryoutHistory: [...currentRuns, ...newRuns].slice(0, 30)
+          });
+        }
+      }
+
+      // Merge error log
+      if (Array.isArray(cloudData.errorLog) && cloudData.errorLog.length > 0) {
+        const currentErrors = appStore.errorLog || [];
+        const existingIds = new Set(currentErrors.map(e => e.id));
+        const newErrors = cloudData.errorLog.filter(e => !existingIds.has(e.id));
+        if (newErrors.length > 0) {
+          useAppStore.setState({
+            errorLog: [...currentErrors, ...newErrors]
           });
         }
       }

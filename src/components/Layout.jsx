@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { BookOpen, MessagesSquare, Sparkles, PenTool, BrainCircuit, ShieldAlert, Flame, Swords, Zap, Compass, Cloud } from 'lucide-react';
+import { BookOpen, MessagesSquare, Sparkles, PenTool, BrainCircuit, ShieldAlert, Flame, Swords, Zap, Compass, Cloud, BookX } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useAdminStore } from '../store/useAdminStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -13,6 +13,8 @@ export default function Layout() {
   const targetScore = useAppStore(state => state.targetScore);
   const tryoutHistory = useAppStore(state => state.tryoutHistory) || [];
   const latestTryout = tryoutHistory.length > 0 ? tryoutHistory[0] : null;
+  const errorLog = useAppStore(state => state.errorLog) || [];
+  const unresolvedMistakesCount = errorLog.filter(e => e.status === 'unresolved').length;
 
   const user = useAuthStore(state => state.user);
   const openAuthModal = useAuthStore(state => state.openAuthModal);
@@ -22,6 +24,7 @@ export default function Layout() {
     { to: '/', label: 'Pita Suara', icon: BookOpen },
     { to: '/rasionalisasi', label: 'Rasionalisasi PTN', icon: Compass },
     { to: '/tryout', label: 'Tryout Kilat', icon: Swords },
+    { to: '/dosa', label: 'Buku Dosa', icon: BookX, badge: unresolvedMistakesCount },
     { to: '/bedah', label: 'Bedah Soal AI', icon: Zap },
     { to: '/streak', label: 'Streak & Heatmap', icon: Flame },
     { to: '/one', label: '1 Soal Sehari', icon: BrainCircuit },
@@ -89,7 +92,12 @@ export default function Layout() {
                 }
               >
                 <item.icon className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} />
-                <span>{item.label}</span>
+                <span className="flex-1">{item.label}</span>
+                {item.badge > 0 && (
+                  <span className="bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-none shrink-0 ml-1 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             </li>
           ))}

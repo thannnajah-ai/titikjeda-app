@@ -13,6 +13,7 @@ export default function OneQuestion() {
   const [showHint, setShowHint] = useState(false);
   const setDailyStatus = useAppStore(state => state.setDailyStatus);
   const setLastAnswerDate = useAppStore(state => state.setLastAnswerDate);
+  const recordMistakes = useAppStore(state => state.recordMistakes);
   const dailyStatus = useAppStore(state => state.dailyStatus);
   const lastAnswerDate = useAppStore(state => state.lastAnswerDate);
   const customQuestions = useAdminStore(state => state.customQuestions);
@@ -26,7 +27,7 @@ export default function OneQuestion() {
     if (lastAnswerDate === today && (dailyStatus === 'failed' || dailyStatus === 'passed')) return;
     
     if (timeLeft <= 0) {
-      handleFail();
+      handleFail(null);
       return;
     }
     const timer = setInterval(() => {
@@ -35,9 +36,25 @@ export default function OneQuestion() {
     return () => clearInterval(timer);
   }, [timeLeft, lastAnswerDate, today, dailyStatus]);
 
-  const handleFail = async () => {
+  const handleFail = async (selectedOption = null) => {
     setLastAnswerDate(today);
     setDailyStatus('failed');
+
+    if (currentQuestion) {
+      recordMistakes([{
+        id: `daily-${currentQuestion.id}`,
+        originalId: currentQuestion.id,
+        source: '1 Soal Sehari',
+        code: currentQuestion.code,
+        subject: currentQuestion.subject,
+        subtopic: currentQuestion.subtopic,
+        question: currentQuestion.question,
+        options: currentQuestion.options,
+        correctIndex: currentQuestion.correctIndex,
+        userSelected: selectedOption,
+        explanation: currentQuestion.explanation
+      }]);
+    }
     
     if (import.meta.env.VITE_SUPABASE_URL) {
       try {
@@ -73,7 +90,7 @@ export default function OneQuestion() {
     if (index === currentQuestion.correctIndex) {
       handlePass();
     } else {
-      handleFail();
+      handleFail(index);
     }
   };
 
