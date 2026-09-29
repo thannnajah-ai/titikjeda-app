@@ -58,6 +58,12 @@ export default function Layout() {
            >
              [DEV] RESET ALIBI (ANTI-ZOMBIE)
            </button>
+           <button 
+            onClick={() => useAppStore.getState().setDailyStatus(null)}
+            className="w-full text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-950 transition-colors"
+           >
+             [DEV] RESET 1 SOAL (STATUS)
+           </button>
         </div>
       </nav>
 
