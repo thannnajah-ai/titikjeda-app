@@ -53,36 +53,37 @@ Syarat:
       className="max-w-xl mx-auto space-y-8"
     >
       <div>
-        <h2 className="text-4xl font-black tracking-tighter text-zinc-950 uppercase mb-2">Titik Buta</h2>
-        <p className="text-zinc-600 font-mono font-bold uppercase tracking-widest text-sm">Kalkulator realita. Masukkan skor lu dan target lu. Jangan baper kalau jawabannya pedas.</p>
+        <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-950 uppercase mb-2">Titik Buta</h2>
+        <p className="text-zinc-600 font-mono font-bold uppercase tracking-widest text-xs md:text-sm">Kalkulator realita. Masukkan skor lu dan target lu. Jangan baper kalau jawabannya pedas.</p>
       </div>
 
-      <form onSubmit={handleCheck} className="space-y-6 bg-white border-[8px] border-zinc-950 p-6 md:p-8">
+      <form onSubmit={handleCheck} className="space-y-6 bg-white border-4 md:border-[8px] border-zinc-950 p-4 sm:p-6 md:p-8">
         <div>
-          <label className="block text-sm font-black text-zinc-950 mb-2 uppercase tracking-widest">Skor TO Terakhir</label>
+          <label className="block text-xs md:text-sm font-black text-zinc-950 mb-2 uppercase tracking-widest">Skor TO Terakhir</label>
           <input 
             type="number" 
+            inputMode="numeric"
             value={score}
             onChange={(e) => setScore(e.target.value)}
             placeholder="CONTOH: 450"
-            className="w-full bg-zinc-50 border-4 border-zinc-950 rounded-none px-4 py-3 focus:outline-none focus:bg-white focus:ring-0 text-zinc-950 font-mono font-bold text-lg uppercase placeholder-zinc-300"
+            className="w-full bg-zinc-50 border-4 border-zinc-950 rounded-none px-4 py-3 focus:outline-none focus:bg-white focus:ring-0 text-zinc-950 font-mono font-bold text-base md:text-lg uppercase placeholder-zinc-300"
           />
         </div>
         <div>
-          <label className="block text-sm font-black text-zinc-950 mb-2 uppercase tracking-widest">Target Kampus & Jurusan</label>
+          <label className="block text-xs md:text-sm font-black text-zinc-950 mb-2 uppercase tracking-widest">Target Kampus & Jurusan</label>
           <input 
             type="text" 
             value={campus}
             onChange={(e) => setCampus(e.target.value)}
             placeholder="CONTOH: STEI ITB"
-            className="w-full bg-zinc-50 border-4 border-zinc-950 rounded-none px-4 py-3 focus:outline-none focus:bg-white focus:ring-0 text-zinc-950 font-mono font-bold text-lg uppercase placeholder-zinc-300"
+            className="w-full bg-zinc-50 border-4 border-zinc-950 rounded-none px-4 py-3 focus:outline-none focus:bg-white focus:ring-0 text-zinc-950 font-mono font-bold text-base md:text-lg uppercase placeholder-zinc-300"
           />
         </div>
 
         <button 
           type="submit"
           disabled={loading || !score || !campus}
-          className="w-full bg-zinc-950 text-white font-black py-4 text-xl uppercase tracking-widest active:scale-[0.97] transition-transform disabled:opacity-50"
+          className="w-full bg-zinc-950 text-white font-black py-4 text-base md:text-xl uppercase tracking-widest active:scale-[0.97] transition-transform disabled:opacity-50 cursor-pointer"
         >
           {loading ? 'MENGHITUNG...' : 'TAMPAR GUE DENGAN REALITA'}
         </button>

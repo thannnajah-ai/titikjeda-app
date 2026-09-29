@@ -267,7 +267,7 @@ export default function LockerRoom() {
       <AnimatePresence>
         {activeCheatSheet && (
           <div 
-            className="fixed inset-0 z-50 bg-zinc-950/80 flex items-center justify-center p-3 md:p-6"
+            className="fixed inset-0 z-50 bg-zinc-950/85 flex items-center justify-center p-2.5 sm:p-4 md:p-6"
             onClick={() => setActiveCheatSheet(null)}
           >
             <motion.div 
@@ -276,24 +276,24 @@ export default function LockerRoom() {
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-3xl max-h-[90vh] bg-white border-8 border-zinc-950 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden"
+              className="w-full max-w-3xl max-h-[90dvh] bg-white border-4 md:border-8 border-zinc-950 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden"
             >
               {/* Modal Header */}
-              <div className="bg-zinc-950 text-white p-4 md:p-6 border-b-6 border-zinc-950 flex justify-between items-start gap-4">
+              <div className="bg-zinc-950 text-white p-4 md:p-6 border-b-4 md:border-b-6 border-zinc-950 flex justify-between items-start gap-3">
                 <div>
                   <div className="font-mono text-xs font-black uppercase tracking-widest text-zinc-400 mb-1">
                     {activeCheatSheet.code}
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
+                  <h3 className="text-xl md:text-3xl font-black uppercase tracking-tighter leading-none">
                     {activeCheatSheet.title}
                   </h3>
-                  <p className="text-xs font-mono font-bold uppercase text-zinc-300 mt-2">
+                  <p className="text-xs font-mono font-bold uppercase text-zinc-300 mt-1.5 md:mt-2">
                     {activeCheatSheet.desc}
                   </p>
                 </div>
                 <button
                   onClick={() => setActiveCheatSheet(null)}
-                  className="bg-white text-zinc-950 border-2 border-white px-3 py-1 font-mono font-black text-xs uppercase hover:bg-zinc-200 active:scale-[0.97] transition-transform flex items-center gap-1 shrink-0"
+                  className="bg-white text-zinc-950 border-2 border-white px-2.5 py-1 font-mono font-black text-xs uppercase hover:bg-zinc-200 active:scale-[0.97] transition-transform flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <X className="w-4 h-4" strokeWidth={3} />
                   <span>[ESC]</span>
@@ -301,24 +301,24 @@ export default function LockerRoom() {
               </div>
 
               {/* Modal Body */}
-              <div className="overflow-y-auto p-4 md:p-6 space-y-6 font-mono">
+              <div className="overflow-y-auto p-3.5 sm:p-4 md:p-6 space-y-4 md:space-y-6 font-mono overscroll-contain">
                 {activeCheatSheet.sections.map((sec, idx) => (
-                  <div key={idx} className="border-4 border-zinc-950 bg-zinc-50 p-4 md:p-5">
-                    <div className="bg-zinc-950 text-white font-mono font-black text-xs md:text-sm uppercase px-3 py-1 inline-block mb-4">
+                  <div key={idx} className="border-2 md:border-4 border-zinc-950 bg-zinc-50 p-3.5 sm:p-4 md:p-5">
+                    <div className="bg-zinc-950 text-white font-mono font-black text-xs md:text-sm uppercase px-2.5 py-1 inline-block mb-3 md:mb-4">
                       {sec.heading}
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2.5 md:space-y-3">
                       {sec.rules.map((rule, rIdx) => (
-                        <div key={rIdx} className="bg-white border-2 border-zinc-950 p-3">
-                          <div className="text-[11px] font-black uppercase text-zinc-500 mb-1 tracking-wider">
+                        <div key={rIdx} className="bg-white border-2 border-zinc-950 p-2.5 sm:p-3">
+                          <div className="text-[10px] md:text-[11px] font-black uppercase text-zinc-500 mb-1 tracking-wider">
                             // {rule.label}
                           </div>
-                          <div className="text-sm font-black text-zinc-950 leading-relaxed">
+                          <div className="text-xs sm:text-sm font-black text-zinc-950 leading-relaxed">
                             {rule.formula}
                           </div>
                           {rule.note && (
-                            <div className="text-xs font-bold text-zinc-700 mt-1.5 pt-1.5 border-t border-zinc-200">
+                            <div className="text-[11px] sm:text-xs font-bold text-zinc-700 mt-1.5 pt-1.5 border-t border-zinc-200">
                               ℹ {rule.note}
                             </div>
                           )}
@@ -327,8 +327,8 @@ export default function LockerRoom() {
                     </div>
 
                     {sec.warning && (
-                      <div className="mt-4 border-l-6 border-red-600 bg-red-50 p-3 flex gap-2 items-start">
-                        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" strokeWidth={2.5} />
+                      <div className="mt-3 md:mt-4 border-l-4 md:border-l-6 border-red-600 bg-red-50 p-2.5 sm:p-3 flex gap-2 items-start">
+                        <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 shrink-0 mt-0.5" strokeWidth={2.5} />
                         <div className="text-xs font-black text-red-950 leading-relaxed uppercase">
                           {sec.warning}
                         </div>
@@ -339,13 +339,13 @@ export default function LockerRoom() {
               </div>
 
               {/* Modal Footer */}
-              <div className="border-t-4 border-zinc-950 p-4 bg-zinc-100 flex items-center justify-between font-mono">
-                <span className="text-[11px] font-black uppercase tracking-wider text-zinc-500">
+              <div className="border-t-4 border-zinc-950 p-3 sm:p-4 bg-zinc-100 flex items-center justify-between font-mono">
+                <span className="text-[10px] md:text-[11px] font-black uppercase tracking-wider text-zinc-500">
                   TITIKJEDA PROTOKOL 80/20
                 </span>
                 <button
                   onClick={() => setActiveCheatSheet(null)}
-                  className="bg-zinc-950 text-white px-5 py-2 font-black text-xs uppercase tracking-wider hover:bg-zinc-800 active:scale-[0.97] transition-transform"
+                  className="bg-zinc-950 text-white px-4 md:px-5 py-1.5 md:py-2 font-black text-xs uppercase tracking-wider hover:bg-zinc-800 active:scale-[0.97] transition-transform cursor-pointer"
                 >
                   TUTUP DOKUMEN
                 </button>

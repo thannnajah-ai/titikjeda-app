@@ -14,20 +14,20 @@ export default function BloodOath() {
   // If already signed, show the Certificate Mode instead of the signing form
   if (oathSignature) {
     return (
-      <div className="max-w-2xl mx-auto mt-12 p-8 bg-white border-[8px] border-zinc-950 flex flex-col items-center">
-        <h2 className="text-3xl font-black uppercase text-zinc-950 mb-6 tracking-tighter">Kontrak Absolut</h2>
-        <p className="text-zinc-800 text-center font-mono leading-relaxed mb-12">
+      <div className="max-w-2xl mx-auto mt-6 md:mt-12 p-5 md:p-8 bg-white border-4 md:border-[8px] border-zinc-950 flex flex-col items-center">
+        <h2 className="text-2xl md:text-3xl font-black uppercase text-zinc-950 mb-6 tracking-tighter">Kontrak Absolut</h2>
+        <p className="text-zinc-800 text-center font-mono leading-relaxed mb-8 md:mb-12 text-sm md:text-base">
           SAYA TELAH MENGIKATKAN DIRI PADA SUMPAH INI.<br/>
           SAYA TIDAK AKAN MUNDUR, BERHENTI, ATAU MENGELUH.<br/>
           SAYA AKAN MENCAPAI TARGET SAYA.
         </p>
         <div className="w-full max-w-sm border-b-2 border-zinc-950 flex justify-center mb-4">
-          <img src={oathSignature} alt="Tanda Tangan" className="h-32 object-contain mix-blend-multiply" />
+          <img src={oathSignature} alt="Tanda Tangan" className="h-24 md:h-32 object-contain mix-blend-multiply" />
         </div>
         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Sah dan Permanen</p>
         <button 
           onClick={() => navigate('/')}
-          className="mt-12 w-full bg-zinc-950 text-white font-black py-4 uppercase tracking-widest active:scale-97"
+          className="mt-8 md:mt-12 w-full bg-zinc-950 text-white font-black py-4 uppercase tracking-widest active:scale-97"
         >
           Kembali ke Loker
         </button>
@@ -78,14 +78,14 @@ export default function BloodOath() {
       initial={{ opacity: 0, y: 50, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-      className="max-w-2xl mx-auto mt-12"
+      className="max-w-2xl mx-auto mt-4 md:mt-12"
     >
-      <div className="bg-white border-[12px] border-zinc-950 p-6 md:p-10 relative">
-        <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-zinc-950 uppercase mb-8 text-center leading-[0.9]">
+      <div className="bg-white border-8 md:border-[12px] border-zinc-950 p-4 sm:p-6 md:p-10 relative">
+        <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-zinc-950 uppercase mb-6 md:mb-8 text-center leading-[0.9]">
           Kontrak<br/>Sumpah Darah
         </h2>
         
-        <div className="text-zinc-900 font-mono text-sm md:text-base leading-relaxed space-y-6 mb-12 text-justify">
+        <div className="text-zinc-900 font-mono text-xs md:text-base leading-relaxed space-y-4 md:space-y-6 mb-8 md:mb-12 text-justify">
           <p>
             DENGAN INI SAYA MENYATAKAN BAHWA SAYA SEPENUHNYA BERTANGGUNG JAWAB ATAS MASA DEPAN SAYA SENDIRI.
           </p>
@@ -97,17 +97,17 @@ export default function BloodOath() {
           </p>
         </div>
 
-        <div className="mb-8">
-          <label className="block text-xs font-black text-zinc-950 mb-3 uppercase tracking-widest">
+        <div className="mb-6 md:mb-8">
+          <label className="block text-xs font-black text-zinc-950 mb-2 uppercase tracking-widest">
             Bubuhkan Tanda Tangan Anda
           </label>
-          {/* Canvas Wrapper - Pure Monochrome White with Black Border */}
-          <div className="bg-white border-4 border-zinc-950 w-full rounded-none relative z-10">
+          {/* Canvas Wrapper - touch-none stops touch scrolling so stroke drawing works on phones */}
+          <div className="bg-white border-4 border-zinc-950 w-full rounded-none relative z-10 touch-none">
             <SignatureCanvas 
               ref={sigCanvas}
               penColor="black"
               canvasProps={{
-                className: 'w-full h-48 md:h-64 cursor-crosshair'
+                className: 'w-full h-44 md:h-64 cursor-crosshair'
               }}
             />
           </div>
@@ -123,7 +123,7 @@ export default function BloodOath() {
 
         <button 
           onClick={handleSave}
-          className="w-full bg-[#ff0033] text-white font-black text-xl py-6 uppercase tracking-widest active:scale-[0.97] transition-transform cursor-pointer relative z-20"
+          className="w-full bg-[#ff0033] text-white font-black text-lg md:text-xl py-4 md:py-6 uppercase tracking-widest active:scale-[0.97] transition-transform cursor-pointer relative z-20"
         >
           SAH
         </button>

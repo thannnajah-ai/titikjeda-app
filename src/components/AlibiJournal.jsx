@@ -32,17 +32,17 @@ export default function AlibiJournal({ onComplete }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] bg-zinc-950 flex flex-col items-center justify-center p-6 md:p-12">
+    <div className="fixed inset-0 z-[1000] bg-zinc-950 flex flex-col items-center justify-center p-3 sm:p-6 md:p-12 overflow-y-auto">
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0, duration: 0.2 }}
-        className="bg-white border-[12px] border-zinc-950 p-6 md:p-12 w-full max-w-2xl relative"
+        className="bg-white border-8 md:border-[12px] border-zinc-950 p-5 sm:p-8 md:p-12 w-full max-w-2xl relative my-auto"
       >
-        <h2 className="text-4xl md:text-5xl font-black text-zinc-950 uppercase tracking-tighter mb-4 leading-none">
+        <h2 className="text-3xl md:text-5xl font-black text-zinc-950 uppercase tracking-tighter mb-3 md:mb-4 leading-none">
           Interogasi<br/>Niat Belajar
         </h2>
-        <p className="text-zinc-900 font-mono font-bold uppercase tracking-widest text-sm md:text-base leading-relaxed mb-8 text-justify">
+        <p className="text-zinc-900 font-mono font-bold uppercase tracking-widest text-xs md:text-base leading-relaxed mb-6 md:mb-8 text-justify">
           SEBELUM MENGAKSES FASILITAS, JELASKAN APA TUJUAN SPESIFIK ANDA HARI INI. APA YANG INGIN DIKUASAI? APA YANG MASIH MENJADI KELEMAHAN?
         </p>
         
@@ -54,11 +54,11 @@ export default function AlibiJournal({ onComplete }) {
               if (errorMsg) setErrorMsg('');
             }}
             placeholder="CONTOH: HARI INI SAYA HARUS MENAKLUKKAN SOAL MATRIKS KARENA KEMARIN MASIH BANYAK SALAH DI BAGIAN INVERS..."
-            className={`w-full bg-zinc-50 border-4 ${errorMsg ? 'border-red-600' : 'border-zinc-950'} p-4 md:p-6 min-h-[200px] text-zinc-950 font-mono font-bold text-lg md:text-xl placeholder-zinc-400 focus:outline-none focus:ring-0 resize-none mb-2`}
+            className={`w-full bg-zinc-50 border-4 ${errorMsg ? 'border-red-600' : 'border-zinc-950'} p-3 md:p-6 min-h-[150px] md:min-h-[200px] text-zinc-950 font-mono font-bold text-base md:text-xl placeholder-zinc-400 focus:outline-none focus:ring-0 resize-none mb-2`}
             spellCheck={false}
           />
           
-          <div className="h-8 mb-4">
+          <div className="min-h-6 mb-3">
             {errorMsg && (
               <span className="text-red-600 font-black uppercase tracking-widest text-xs md:text-sm animate-pulse">
                 &gt; {errorMsg}
@@ -68,7 +68,7 @@ export default function AlibiJournal({ onComplete }) {
 
           <button 
             type="submit"
-            className="w-full bg-zinc-950 text-white font-black text-xl py-6 uppercase tracking-widest hover:bg-zinc-800 active:scale-[0.97] transition-transform cursor-pointer"
+            className="w-full bg-zinc-950 text-white font-black text-lg md:text-xl py-4 md:py-6 uppercase tracking-widest hover:bg-zinc-800 active:scale-[0.97] transition-transform cursor-pointer"
           >
             SIMPAN & MASUK
           </button>

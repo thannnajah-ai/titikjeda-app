@@ -114,7 +114,7 @@ export default function BilikKonsultasi() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto relative"
+      className="flex flex-col h-[calc(100dvh-11rem)] md:h-[calc(100dvh-8rem)] max-w-3xl mx-auto relative"
     >
       <AnimatePresence>
         {isEndingSession && (
@@ -122,18 +122,18 @@ export default function BilikKonsultasi() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-950/90"
+            className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-950/90 p-4"
           >
             <motion.div 
               initial={{ scale: 0.8, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="flex flex-col items-center bg-white border-8 border-zinc-950 p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-md w-full"
+              className="flex flex-col items-center bg-white border-4 md:border-8 border-zinc-950 p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-md w-full"
             >
-              <span className="text-6xl mb-6">🧠</span>
-              <h3 className="text-3xl font-black text-zinc-950 uppercase tracking-tighter mb-2">MEMORI DISIMPAN</h3>
-              <p className="text-sm text-zinc-600 font-mono font-bold uppercase tracking-widest text-center leading-relaxed">
+              <span className="text-5xl md:text-6xl mb-4 md:mb-6">🧠</span>
+              <h3 className="text-2xl md:text-3xl font-black text-zinc-950 uppercase tracking-tighter mb-2">MEMORI DISIMPAN</h3>
+              <p className="text-xs md:text-sm text-zinc-600 font-mono font-bold uppercase tracking-widest text-center leading-relaxed">
                 AI AKAN MENGINGAT<br/>PERCAKAPAN INI BESOK.
               </p>
             </motion.div>
@@ -141,21 +141,21 @@ export default function BilikKonsultasi() {
         )}
       </AnimatePresence>
 
-      <div className="mb-6 border-b-8 border-zinc-950 pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+      <div className="mb-4 md:mb-6 border-b-4 md:border-b-8 border-zinc-950 pb-4 md:pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 md:gap-4">
         <div>
-          <h2 className="text-4xl font-black tracking-tighter text-zinc-950 uppercase">Bilik Konsultasi</h2>
-          <p className="text-sm font-mono font-bold uppercase tracking-widest text-zinc-500 mt-1">PRIVAT. BEREMPATI, BUKAN MENGGURUI.</p>
+          <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-950 uppercase leading-none">Bilik Konsultasi</h2>
+          <p className="text-xs font-mono font-bold uppercase tracking-widest text-zinc-500 mt-1">PRIVAT. BEREMPATI, BUKAN MENGGURUI.</p>
         </div>
         <button 
           onClick={handleEndSession}
           disabled={isLoading || messages.length <= 1}
-          className="text-xs px-4 py-2 bg-white hover:bg-zinc-950 text-zinc-950 hover:text-white font-black uppercase tracking-widest border-4 border-zinc-950 active:scale-[0.97] transition-all disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300"
+          className="text-xs px-3 py-1.5 md:px-4 md:py-2 bg-white hover:bg-zinc-950 text-zinc-950 hover:text-white font-black uppercase tracking-widest border-2 md:border-4 border-zinc-950 active:scale-[0.97] transition-all disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300 cursor-pointer"
         >
           AKHIRI SESI & SIMPAN
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto mb-6 pr-2 space-y-6 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto mb-4 md:mb-6 pr-1 md:pr-2 space-y-4 md:space-y-6 scrollbar-hide overscroll-contain">
         {messages.map((msg, i) => (
           <motion.div 
             key={i} 
@@ -165,7 +165,7 @@ export default function BilikKonsultasi() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div 
-              className={`max-w-[85%] px-6 py-4 font-mono font-bold uppercase leading-relaxed text-sm md:text-base border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+              className={`max-w-[90%] md:max-w-[85%] px-4 py-3 md:px-6 md:py-4 font-mono font-bold uppercase leading-relaxed text-xs md:text-base border-2 md:border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
                 ${msg.role === 'user' 
                   ? 'bg-zinc-950 text-white' 
                   : 'bg-white text-zinc-950'
@@ -182,10 +182,10 @@ export default function BilikKonsultasi() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="flex justify-start"
           >
-            <div className="bg-white border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-6 py-4 flex gap-2">
-              <span className="w-3 h-3 bg-zinc-950 animate-bounce"></span>
-              <span className="w-3 h-3 bg-zinc-950 animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-              <span className="w-3 h-3 bg-zinc-950 animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+            <div className="bg-white border-2 md:border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-4 py-3 md:px-6 md:py-4 flex gap-2">
+              <span className="w-2.5 h-2.5 md:w-3 md:h-3 bg-zinc-950 animate-bounce"></span>
+              <span className="w-2.5 h-2.5 md:w-3 md:h-3 bg-zinc-950 animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+              <span className="w-2.5 h-2.5 md:w-3 md:h-3 bg-zinc-950 animate-bounce" style={{ animationDelay: '0.4s' }}></span>
             </div>
           </motion.div>
         )}
@@ -197,16 +197,16 @@ export default function BilikKonsultasi() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="CERITAIN, LAGI NGERASA APA SEKARANG?"
-          className="flex-1 bg-white border-4 border-zinc-950 px-6 py-4 focus:outline-none focus:bg-zinc-50 text-zinc-950 font-mono font-bold uppercase placeholder-zinc-400 transition-colors"
+          placeholder="CERITAIN, LAGI NGERASA APA?"
+          className="flex-1 bg-white border-4 border-zinc-950 px-4 md:px-6 py-3.5 md:py-4 focus:outline-none focus:bg-zinc-50 text-zinc-950 font-mono font-bold text-sm md:text-base uppercase placeholder-zinc-400 transition-colors"
           disabled={isLoading}
         />
         <button 
           type="submit"
           disabled={!input.trim() || isLoading}
-          className="aspect-square flex items-center justify-center bg-zinc-950 hover:bg-zinc-800 text-white border-4 border-zinc-950 px-6 active:scale-[0.97] transition-all disabled:opacity-50"
+          className="aspect-square flex items-center justify-center bg-zinc-950 hover:bg-zinc-800 text-white border-4 border-zinc-950 px-4 md:px-6 active:scale-[0.97] transition-all disabled:opacity-50 cursor-pointer"
         >
-          <Send className="w-6 h-6" strokeWidth={3} />
+          <Send className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
         </button>
       </form>
     </motion.div>
