@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit, FileText, ShieldAlert, Flame, Swords, Zap, Compass } from 'lucide-react';
+import { BookOpen, MessagesSquare, Sparkles, PenTool, BrainCircuit, ShieldAlert, Flame, Swords, Zap, Compass, Cloud } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useAdminStore } from '../store/useAdminStore';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function Layout() {
   const adminAnnouncement = useAdminStore(state => state.adminAnnouncement);
@@ -12,6 +13,10 @@ export default function Layout() {
   const targetScore = useAppStore(state => state.targetScore);
   const tryoutHistory = useAppStore(state => state.tryoutHistory) || [];
   const latestTryout = tryoutHistory.length > 0 ? tryoutHistory[0] : null;
+
+  const user = useAuthStore(state => state.user);
+  const openAuthModal = useAuthStore(state => state.openAuthModal);
+  const signOut = useAuthStore(state => state.signOut);
   
   const navItems = [
     { to: '/', label: 'Pita Suara', icon: BookOpen },
@@ -33,7 +38,26 @@ export default function Layout() {
           <h1 className="text-xl font-black tracking-tighter text-zinc-950 uppercase leading-none">TitikJeda.</h1>
           <p className="text-[10px] text-zinc-600 font-mono font-bold tracking-widest uppercase">ZenUTBK V3</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {!user ? (
+            <button
+              onClick={openAuthModal}
+              className="flex items-center gap-1 bg-amber-400 text-black text-[10px] font-mono font-black uppercase px-2 py-1 border border-zinc-950 cursor-pointer active:scale-95"
+            >
+              <Cloud className="w-3 h-3 text-black" />
+              <span>SIMPAN</span>
+            </button>
+          ) : (
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1 bg-zinc-200 text-zinc-800 text-[10px] font-mono font-bold uppercase px-2 py-1 border border-zinc-400"
+              title="Klik untuk Keluar"
+            >
+              <span className="w-2 h-2 bg-emerald-500 rounded-none inline-block"></span>
+              <span className="max-w-[70px] truncate">{user.email?.split('@')[0]}</span>
+            </button>
+          )}
+
           <NavLink 
             to="/admin" 
             className="flex items-center gap-1 bg-zinc-950 text-white text-[10px] font-mono font-black uppercase px-2 py-1"
@@ -41,10 +65,6 @@ export default function Layout() {
             <ShieldAlert className="w-3 h-3 text-red-500" />
             <span>ADMIN</span>
           </NavLink>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 bg-emerald-500 rounded-none animate-pulse"></span>
-            <span className="text-[10px] font-mono font-black uppercase text-zinc-600">LIVE</span>
-          </div>
         </div>
       </header>
 
@@ -75,10 +95,38 @@ export default function Layout() {
           ))}
         </ul>
         
-        <div className="mt-auto hidden md:block pt-8">
+        <div className="mt-auto hidden md:block pt-6">
+          {!user ? (
+            <button 
+              onClick={openAuthModal}
+              className="w-full bg-zinc-950 hover:bg-zinc-800 text-white font-mono font-black text-xs uppercase p-3 border-2 border-zinc-950 flex items-center justify-center gap-2 cursor-pointer shadow-[3px_3px_0px_0px_rgba(220,38,38,1)] active:scale-95 transition-transform mb-3"
+            >
+              <Cloud className="w-4 h-4 text-amber-400" />
+              <span>SIMPAN PROGRES (CLOUD)</span>
+            </button>
+          ) : (
+            <div className="bg-white border-2 border-zinc-950 p-2.5 mb-3 font-mono text-[10px]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-black text-zinc-950 truncate max-w-[130px]" title={user.email}>
+                  {user.email}
+                </span>
+                <span className="w-2 h-2 bg-emerald-500 rounded-none animate-pulse" title="Tersinkronisasi Cloud"></span>
+              </div>
+              <div className="flex items-center justify-between text-zinc-500 font-bold border-t border-zinc-200 pt-1 mt-1">
+                <span className="text-emerald-600 font-black">SINKRON AKTIF 🟢</span>
+                <button 
+                  onClick={signOut} 
+                  className="text-red-600 font-black hover:underline cursor-pointer"
+                >
+                  [KELUAR]
+                </button>
+              </div>
+            </div>
+          )}
+
            <NavLink 
             to="/admin"
-            className="w-full flex items-center gap-2 text-left text-[11px] font-mono font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors pt-4 border-t-2 border-zinc-200 cursor-pointer"
+            className="w-full flex items-center gap-2 text-left text-[11px] font-mono font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors pt-2 border-t-2 border-zinc-200 cursor-pointer"
            >
              <ShieldAlert className="w-4 h-4 text-red-600" />
              <span>[OTORITAS ADMIN]</span>

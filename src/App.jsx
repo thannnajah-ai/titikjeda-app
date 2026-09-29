@@ -1,7 +1,9 @@
-import React, { Suspense, lazy } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import SilentRadio from './components/SilentRadio';
+import AuthModal from './components/AuthModal';
+import { useAuthStore } from './store/useAuthStore';
 
 // Code-split pages for lightning-fast sub-second initial load
 const LockerRoom = lazy(() => import('./pages/LockerRoom'));
@@ -27,9 +29,16 @@ function ModuleLoadingFallback() {
 }
 
 export default function App() {
+  const initAuth = useAuthStore(state => state.initAuth);
+
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
+
   return (
     <>
       <SilentRadio />
+      <AuthModal />
       <Suspense fallback={<ModuleLoadingFallback />}>
         <Routes>
           <Route path="/" element={<Layout />}>
