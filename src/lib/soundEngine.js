@@ -252,3 +252,4 @@ class SoundEngine {
 }
 
 export const soundEngine = new SoundEngine();
+export default soundEngine;

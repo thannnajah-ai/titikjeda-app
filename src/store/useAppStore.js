@@ -67,6 +67,21 @@ export const useAppStore = create(
       resetAlibiStatus: () => set({ hasDoneAlibiToday: false }),
       clearAlibiLogs: () => set({ alibiLogs: [] }),
 
+      // Tryout Kilat Pareto
+      tryoutHistory: [],
+      saveTryoutResult: (result) => set((state) => {
+        const todayKey = new Date().toISOString().split('T')[0];
+        const newHistory = { ...state.habitHistory };
+        // If tryout score >= 600, qualify as passed today if not already passed
+        if (result.score >= 600 && (!newHistory[todayKey] || newHistory[todayKey] !== 'passed')) {
+          newHistory[todayKey] = 'passed';
+        }
+        return {
+          tryoutHistory: [result, ...state.tryoutHistory].slice(0, 30), // keep latest 30 runs
+          habitHistory: newHistory
+        };
+      }),
+
       incrementTime: () => set((state) => {
         const newTime = state.studyTime + 1;
         if (newTime >= 5400) {
@@ -86,7 +101,8 @@ export const useAppStore = create(
         dailyStatus: state.dailyStatus,
         alibiLogs: state.alibiLogs,
         hasDoneAlibiToday: state.hasDoneAlibiToday,
-        habitHistory: state.habitHistory
+        habitHistory: state.habitHistory,
+        tryoutHistory: state.tryoutHistory
       }) // Only persist these
     }
   )

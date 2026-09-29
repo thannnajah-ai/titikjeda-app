@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit, FileText, ShieldAlert, Flame } from 'lucide-react';
+import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit, FileText, ShieldAlert, Flame, Swords } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useAdminStore } from '../store/useAdminStore';
 
@@ -10,11 +10,12 @@ export default function Layout() {
   
   const navItems = [
     { to: '/', label: 'Pita Suara', icon: BookOpen },
+    { to: '/tryout', label: 'Tryout Kilat', icon: Swords },
     { to: '/streak', label: 'Streak & Heatmap', icon: Flame },
+    { to: '/one', label: '1 Soal Sehari', icon: BrainCircuit },
     { to: '/mentor', label: 'AI Mentor', icon: Sparkles },
     { to: '/void', label: 'The Void', icon: MessagesSquare },
     { to: '/blindspot', label: 'Titik Buta', icon: Target },
-    { to: '/one', label: '1 Soal Sehari', icon: BrainCircuit },
     { to: '/oath', label: 'Sumpah Darah', icon: PenTool },
     { to: '/alibi', label: 'Jurnal Alibi', icon: FileText },
   ];

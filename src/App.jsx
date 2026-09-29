@@ -14,6 +14,7 @@ import OneQuestion from './pages/OneQuestion';
 import AlibiLog from './pages/AlibiLog';
 import AdminPanel from './pages/AdminPanel';
 import StreakPage from './pages/StreakPage';
+import TryoutKilat from './pages/TryoutKilat';
 import NightProtocol from './components/NightProtocol';
 import SilentRadio from './components/SilentRadio';
 import DailyLockout from './components/DailyLockout';
@@ -44,6 +45,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<LockerRoom />} />
+          <Route path="tryout" element={<TryoutKilat />} />
           <Route path="streak" element={<StreakPage />} />
           <Route path="void" element={<TheVoid />} />
           <Route path="mentor" element={<BilikKonsultasi />} />

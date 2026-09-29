@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Flame, Trophy, Target, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Flame, Trophy, Target, ArrowRight, ShieldCheck, Sparkles, Swords } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import HabitHeatmap from '../components/HabitHeatmap';
 import SoundscapeMixer from '../components/SoundscapeMixer';
@@ -68,6 +68,28 @@ export default function StreakPage() {
           </div>
         </div>
       )}
+
+      {/* Quick CTA to Tryout Kilat Pareto */}
+      <div className="bg-zinc-950 text-white border-4 md:border-8 border-zinc-950 p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-[10px] font-black text-red-500 uppercase tracking-widest block mb-1">
+            MODE UJIAN KILAT 10 MENIT
+          </span>
+          <h3 className="font-black text-lg md:text-xl uppercase text-white leading-tight">
+            TRYOUT KILAT PARETO // SPRINT 10 SOAL
+          </h3>
+          <p className="text-xs text-zinc-400 font-bold uppercase mt-1">
+            Skor IRT 200-1000. Skor ≥ 600 otomatis memvalidasi disiplin harian Anda.
+          </p>
+        </div>
+        <NavLink
+          to="/tryout"
+          className="bg-red-600 hover:bg-red-500 text-white font-black px-6 py-3 text-xs md:text-sm uppercase tracking-widest flex items-center gap-2 shrink-0 border-2 border-white active:scale-95 transition-transform"
+        >
+          <Swords className="w-4 h-4" />
+          <span>MULAI TRYOUT KILAT</span>
+        </NavLink>
+      </div>
 
       {/* 1. Master Heatmap Component */}
       <HabitHeatmap />
