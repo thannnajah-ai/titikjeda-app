@@ -82,6 +82,11 @@ export const useAppStore = create(
         };
       }),
 
+      // Spartan Target & PTN Goal
+      targetPTN: 'STEI ITB - REKAYASA PERANGKAT LUNAK',
+      targetScore: 735,
+      setTargetGoal: ({ targetPTN, targetScore }) => set({ targetPTN, targetScore }),
+
       incrementTime: () => set((state) => {
         const newTime = state.studyTime + 1;
         if (newTime >= 5400) {
@@ -102,7 +107,9 @@ export const useAppStore = create(
         alibiLogs: state.alibiLogs,
         hasDoneAlibiToday: state.hasDoneAlibiToday,
         habitHistory: state.habitHistory,
-        tryoutHistory: state.tryoutHistory
+        tryoutHistory: state.tryoutHistory,
+        targetPTN: state.targetPTN,
+        targetScore: state.targetScore
       }) // Only persist these
     }
   )

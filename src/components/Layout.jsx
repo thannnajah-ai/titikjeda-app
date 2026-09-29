@@ -1,15 +1,21 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit, FileText, ShieldAlert, Flame, Swords, Zap } from 'lucide-react';
+import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit, FileText, ShieldAlert, Flame, Swords, Zap, Compass } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useAdminStore } from '../store/useAdminStore';
 
 export default function Layout() {
   const adminAnnouncement = useAdminStore(state => state.adminAnnouncement);
   const isAnnouncementActive = useAdminStore(state => state.isAnnouncementActive);
+
+  const targetPTN = useAppStore(state => state.targetPTN);
+  const targetScore = useAppStore(state => state.targetScore);
+  const tryoutHistory = useAppStore(state => state.tryoutHistory) || [];
+  const latestTryout = tryoutHistory.length > 0 ? tryoutHistory[0] : null;
   
   const navItems = [
     { to: '/', label: 'Pita Suara', icon: BookOpen },
+    { to: '/rasionalisasi', label: 'Rasionalisasi PTN', icon: Compass },
     { to: '/tryout', label: 'Tryout Kilat', icon: Swords },
     { to: '/bedah', label: 'Bedah Soal AI', icon: Zap },
     { to: '/streak', label: 'Streak & Heatmap', icon: Flame },
@@ -84,9 +90,50 @@ export default function Layout() {
 
       {/* Main Content Area */}
       <main className="flex-1 relative bg-white overflow-x-hidden flex flex-col">
+        {/* Spartan HUD Ticker: Target PTN, Skor Saat Ini, & Defisit */}
+        <div className="bg-zinc-950 text-white font-mono text-[10px] md:text-xs font-bold border-b-4 border-zinc-950 px-3 md:px-6 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="w-2 h-2 bg-red-600 rounded-none animate-pulse shrink-0"></span>
+            <span className="text-zinc-400 uppercase shrink-0">TARGET:</span>
+            <NavLink 
+              to="/rasionalisasi" 
+              className="text-amber-400 font-black uppercase hover:underline truncate"
+              title="Klik untuk ubah target di Rasionalisasi PTN"
+            >
+              {targetPTN || 'STEI ITB'}
+            </NavLink>
+            <span className="text-zinc-500 hidden sm:inline">|</span>
+            <span className="text-zinc-400 uppercase hidden sm:inline">AMAN: {targetScore || 735} PTS</span>
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-zinc-400 uppercase hidden xs:inline">SKOR TO:</span>
+            <span className="font-black text-white">
+              {latestTryout ? `${latestTryout.score} PTS` : 'BELUM TO'}
+            </span>
+            {latestTryout && (
+              <span className={`px-1.5 py-0.5 text-[9px] font-black uppercase border ${
+                latestTryout.score >= targetScore 
+                  ? 'bg-emerald-600 border-emerald-400 text-white' 
+                  : 'bg-red-600 border-red-400 text-white'
+              }`}>
+                {latestTryout.score >= targetScore 
+                  ? `+${latestTryout.score - targetScore} AMAN` 
+                  : `${latestTryout.score - targetScore} PTS`}
+              </span>
+            )}
+            <NavLink
+              to="/rasionalisasi"
+              className="ml-2 text-[9px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-black px-2 py-0.5 uppercase border border-zinc-600"
+            >
+              CEK RASIONAL ↗
+            </NavLink>
+          </div>
+        </div>
+
         {/* Admin Global Announcement Banner */}
         {isAnnouncementActive && adminAnnouncement && (
-          <div className="bg-zinc-950 text-white font-mono text-[11px] md:text-xs font-black uppercase px-4 py-2 flex items-center justify-between border-b-4 border-zinc-950 relative z-20 shrink-0">
+          <div className="bg-zinc-900 text-white font-mono text-[11px] md:text-xs font-black uppercase px-4 py-2 flex items-center justify-between border-b-4 border-zinc-950 relative z-20 shrink-0">
             <div className="flex items-center gap-2 overflow-hidden w-full">
               <span className="bg-red-600 text-white px-2 py-0.5 text-[9px] md:text-[10px] shrink-0 font-black animate-pulse">
                 WARTA PUSAT
