@@ -22,9 +22,7 @@ export default function Layout() {
     { to: '/one', label: '1 Soal Sehari', icon: BrainCircuit },
     { to: '/mentor', label: 'AI Mentor', icon: Sparkles },
     { to: '/void', label: 'The Void', icon: MessagesSquare },
-    { to: '/blindspot', label: 'Titik Buta', icon: Target },
     { to: '/oath', label: 'Sumpah Darah', icon: PenTool },
-    { to: '/alibi', label: 'Jurnal Alibi', icon: FileText },
   ];
 
   return (
