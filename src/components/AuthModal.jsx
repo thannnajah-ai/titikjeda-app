@@ -1,32 +1,27 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Cloud, ShieldCheck, Mail, Lock, ArrowRight, Check } from 'lucide-react';
+import { motion } from 'motion/react';
+import { X, Cloud, Mail, Lock, ArrowRight, Zap, Info } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export default function AuthModal() {
   const isAuthModalOpen = useAuthStore(state => state.isAuthModalOpen);
   const closeAuthModal = useAuthStore(state => state.closeAuthModal);
+  const smartAuthWithEmail = useAuthStore(state => state.smartAuthWithEmail);
+  const signInDemoUser = useAuthStore(state => state.signInDemoUser);
   const signInWithGoogle = useAuthStore(state => state.signInWithGoogle);
-  const signInWithEmail = useAuthStore(state => state.signInWithEmail);
-  const signUpWithEmail = useAuthStore(state => state.signUpWithEmail);
   const isLoading = useAuthStore(state => state.isLoading);
   const authError = useAuthStore(state => state.authError);
 
-  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showGoogleNotice, setShowGoogleNotice] = useState(false);
 
   if (!isAuthModalOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) return;
-
-    if (mode === 'signin') {
-      await signInWithEmail(email, password);
-    } else {
-      await signUpWithEmail(email, password);
-    }
+    await smartAuthWithEmail(email, password);
   };
 
   return (
@@ -54,10 +49,10 @@ export default function AuthModal() {
             </span>
           </div>
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-zinc-950 leading-none">
-            {mode === 'signin' ? 'MASUK KE AKUN' : 'BUAT AKUN BARU'}
+            MASUK ATAU DAFTAR
           </h2>
           <p className="text-xs text-zinc-600 font-bold uppercase tracking-wider mt-2">
-            Amankan rekam jejak streak, skor tryout IRT, dan target kampus di semua perangkat Anda.
+            Amankan rekam jejak streak 84 hari, skor tryout IRT, dan target kampus Anda di cloud.
           </p>
         </div>
 
@@ -68,43 +63,26 @@ export default function AuthModal() {
           </div>
         )}
 
-        {/* 1-Click Google OAuth */}
-        <div className="space-y-4 mb-6">
+        {/* 1-Click Demo Testing User Button */}
+        <div className="mb-5">
           <button
-            onClick={signInWithGoogle}
+            onClick={() => signInDemoUser()}
             disabled={isLoading}
-            className="w-full bg-zinc-950 hover:bg-zinc-800 text-white font-black p-3.5 text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 border-2 border-zinc-950 active:scale-95 transition-transform cursor-pointer shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]"
+            className="w-full bg-amber-400 hover:bg-amber-300 text-black font-black p-3 text-xs uppercase tracking-widest flex items-center justify-center gap-2 border-2 border-zinc-950 active:scale-95 transition-transform cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
-              <path
-                fill="#EA4335"
-                d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.1 9 5 12 5z"
-              />
-              <path
-                fill="#4285F4"
-                d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-1.9z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.1-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"
-              />
-            </svg>
-            <span>LANJUTKAN DENGAN GOOGLE (1-KLIK)</span>
+            <Zap className="w-4 h-4 fill-black" />
+            <span>MASUK INSTAN DENGAN AKUN DEMO</span>
           </button>
+        </div>
 
-          <div className="relative flex py-1 items-center">
-            <div className="flex-grow border-t-2 border-zinc-200"></div>
-            <span className="flex-shrink mx-3 text-[10px] font-black text-zinc-400 uppercase">ATAU DENGAN EMAIL</span>
-            <div className="flex-grow border-t-2 border-zinc-200"></div>
-          </div>
+        <div className="relative flex py-1 items-center mb-5">
+          <div className="flex-grow border-t-2 border-zinc-200"></div>
+          <span className="flex-shrink mx-3 text-[10px] font-black text-zinc-400 uppercase">ATAU EMAIL ANDA SENDIRI</span>
+          <div className="flex-grow border-t-2 border-zinc-200"></div>
         </div>
 
         {/* Email & Password Form */}
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3 mb-5">
           <div>
             <label className="text-[10px] font-black uppercase text-zinc-500 block mb-1">
               ALAMAT EMAIL:
@@ -142,42 +120,54 @@ export default function AuthModal() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-black p-3 text-xs uppercase tracking-widest border-2 border-zinc-950 active:scale-95 transition-transform cursor-pointer flex items-center justify-center gap-2 mt-4"
+            className="w-full bg-zinc-950 hover:bg-zinc-800 text-white font-black p-3.5 text-xs uppercase tracking-widest border-2 border-zinc-950 active:scale-95 transition-transform cursor-pointer flex items-center justify-center gap-2 mt-4 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]"
           >
             {isLoading ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent animate-spin"></span>
             ) : (
               <>
-                <span>{mode === 'signin' ? 'MASUK SEKARANG' : 'DAFTAR AKUN SEKARANG'}</span>
+                <span>MASUK / DAFTAR OTOMATIS</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
 
-        {/* Mode Toggle Switch */}
-        <div className="mt-5 pt-4 border-t-2 border-zinc-200 text-center text-xs">
-          {mode === 'signin' ? (
-            <p className="text-zinc-600 font-bold">
-              Belum punya akun?{' '}
-              <button
-                type="button"
-                onClick={() => setMode('signup')}
-                className="text-red-600 font-black uppercase underline ml-1 cursor-pointer"
-              >
-                Daftar Baru
-              </button>
-            </p>
-          ) : (
-            <p className="text-zinc-600 font-bold">
-              Sudah punya akun?{' '}
-              <button
-                type="button"
-                onClick={() => setMode('signin')}
-                className="text-red-600 font-black uppercase underline ml-1 cursor-pointer"
-              >
-                Masuk di Sini
-              </button>
+        {/* Google OAuth Section with clear status info */}
+        <div className="border-t-2 border-zinc-200 pt-4">
+          <button
+            onClick={() => {
+              setShowGoogleNotice(true);
+              signInWithGoogle();
+            }}
+            disabled={isLoading}
+            className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold p-2.5 text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-zinc-300 cursor-pointer"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+              <path
+                fill="#EA4335"
+                d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.1 9 5 12 5z"
+              />
+              <path
+                fill="#4285F4"
+                d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 12s.7 2.3 1.9 4.7l3.7-1.9z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.1-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"
+              />
+            </svg>
+            <span>Google Login</span>
+          </button>
+
+          {showGoogleNotice && (
+            <p className="text-[10px] text-zinc-500 font-bold mt-2 leading-relaxed flex items-start gap-1">
+              <Info className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
+              <span>Jika Google menampilkan pesan "provider not enabled", gunakan Email & Kata Sandi di atas atau aktifkan Google Provider di dashboard Supabase.</span>
             </p>
           )}
         </div>
@@ -185,3 +175,4 @@ export default function AuthModal() {
     </div>
   );
 }
+

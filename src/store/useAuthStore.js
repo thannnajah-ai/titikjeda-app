@@ -50,6 +50,50 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  // Smart Instant Auth: coba login, jika akun baru otomatis registrasi
+  smartAuthWithEmail: async (email, password) => {
+    set({ isLoading: true, authError: null });
+    try {
+      // 1. Coba login dulu
+      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (!signInErr && signInData?.user) {
+        set({ user: signInData.user, session: signInData.session, isAuthModalOpen: false });
+        get().syncToCloud(signInData.user);
+        return { success: true, isNew: false };
+      }
+
+      // 2. Jika akun belum terdaftar, coba otomatis buatkan akun
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (signUpErr) {
+        throw new Error(signUpErr.message || signInErr?.message || 'Gagal memproses otentikasi');
+      }
+
+      set({ user: signUpData.user, session: signUpData.session, isAuthModalOpen: false });
+      if (signUpData.user) {
+        get().syncToCloud(signUpData.user);
+      }
+      return { success: true, isNew: true };
+    } catch (e) {
+      set({ authError: e.message || 'Gagal memproses otentikasi' });
+      return { success: false, error: e.message };
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // 1-Click Demo Testing User
+  signInDemoUser: async () => {
+    return get().smartAuthWithEmail('pejuang.utbk@titikjeda.id', 'titikjeda2026');
+  },
+
   // Email Magic Link / Password
   signInWithEmail: async (email, password) => {
     set({ isLoading: true, authError: null });
