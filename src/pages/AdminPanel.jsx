@@ -281,11 +281,7 @@ export default function AdminPanel() {
             </button>
           </form>
 
-          <div className="mt-8 pt-4 border-t-2 border-zinc-200 text-center">
-            <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-mono">
-              Petunjuk awal: PIN bawaan adalah <span className="font-bold text-zinc-950 underline">TITIKJEDA2026</span>
-            </span>
-          </div>
+
         </div>
       </div>
     );
