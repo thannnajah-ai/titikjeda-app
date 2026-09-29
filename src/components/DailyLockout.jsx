@@ -72,16 +72,6 @@ export default function DailyLockout() {
                 </div>
               )}
             </div>
-            
-            {/* Dev Only Reset Button */}
-            <div className="pt-2">
-              <button 
-                onClick={() => useAppStore.getState().setDailyStatus(null)}
-                className="px-4 py-2 text-xs font-mono text-zinc-600 hover:text-white border border-zinc-900 hover:border-zinc-700 transition-colors uppercase cursor-pointer"
-              >
-                [DEV] RESET STATUS KUNCI HARIAN
-              </button>
-            </div>
           </div>
         </motion.div>
       )}

@@ -132,17 +132,6 @@ export default function OneQuestion() {
             </div>
           </div>
         </div>
-
-        {/* Dev Reset Option */}
-        <div className="text-center pt-2">
-          <button
-            onClick={() => setDailyStatus(null)}
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase text-zinc-400 hover:text-zinc-950 transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            [DEV] COBA LAGI (RESET STATUS HARI INI)
-          </button>
-        </div>
       </motion.div>
     );
   }

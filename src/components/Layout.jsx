@@ -5,8 +5,6 @@ import { useAppStore } from '../store/useAppStore';
 import { useAdminStore } from '../store/useAdminStore';
 
 export default function Layout() {
-  const fastForward = useAppStore(state => state.fastForward);
-  const resetAlibiStatus = useAppStore(state => state.resetAlibiStatus);
   const adminAnnouncement = useAdminStore(state => state.adminAnnouncement);
   const isAnnouncementActive = useAdminStore(state => state.isAnnouncementActive);
   
@@ -70,39 +68,13 @@ export default function Layout() {
           ))}
         </ul>
         
-        <div className="mt-auto hidden md:block pt-8 space-y-2">
-           <button 
-            onClick={fastForward}
-            className="w-full text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-950 transition-colors cursor-pointer"
-           >
-             [DEV] FAST FORWARD 90M
-           </button>
-           <button 
-            onClick={resetAlibiStatus}
-            className="w-full text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-950 transition-colors cursor-pointer"
-           >
-             [DEV] RESET ALIBI (ANTI-ZOMBIE)
-           </button>
-           <button 
-            onClick={() => useAppStore.getState().setDailyStatus(null)}
-            className="w-full text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-950 transition-colors cursor-pointer"
-           >
-             [DEV] RESET 1 SOAL (STATUS)
-           </button>
-           <button 
-            onClick={() => {
-              localStorage.removeItem('titikjeda-void-posts');
-              window.location.reload();
-            }}
-            className="w-full text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-950 transition-colors cursor-pointer"
-           >
-             [DEV] RESET THE VOID (POSTS)
-           </button>
+        <div className="mt-auto hidden md:block pt-8">
            <NavLink 
             to="/admin"
-            className="w-full block text-left text-[11px] font-mono font-black uppercase tracking-widest text-red-600 hover:text-zinc-950 transition-colors pt-3 border-t-2 border-zinc-200"
+            className="w-full flex items-center gap-2 text-left text-[11px] font-mono font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors pt-4 border-t-2 border-zinc-200 cursor-pointer"
            >
-             [OTORITAS ADMIN]
+             <ShieldAlert className="w-4 h-4 text-red-600" />
+             <span>[OTORITAS ADMIN]</span>
            </NavLink>
         </div>
       </nav>
