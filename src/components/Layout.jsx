@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit } from 'lucide-react';
+import { BookOpen, MessagesSquare, Sparkles, Target, PenTool, BrainCircuit, FileText } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
 export default function Layout() {
@@ -14,6 +14,7 @@ export default function Layout() {
     { to: '/blindspot', label: 'Titik Buta', icon: Target },
     { to: '/one', label: '1 Soal Sehari', icon: BrainCircuit },
     { to: '/oath', label: 'Sumpah Darah', icon: PenTool },
+    { to: '/alibi', label: 'Jurnal Alibi', icon: FileText },
   ];
 
   return (

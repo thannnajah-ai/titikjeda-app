@@ -11,6 +11,7 @@ import BilikKonsultasi from './pages/BilikKonsultasi';
 import BloodOath from './pages/BloodOath';
 import BlindSpot from './pages/BlindSpot';
 import OneQuestion from './pages/OneQuestion';
+import AlibiLog from './pages/AlibiLog';
 import NightProtocol from './components/NightProtocol';
 import SilentRadio from './components/SilentRadio';
 import DailyLockout from './components/DailyLockout';
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="oath" element={<BloodOath />} />
           <Route path="blindspot" element={<BlindSpot />} />
           <Route path="one" element={<OneQuestion />} />
+          <Route path="alibi" element={<AlibiLog />} />
         </Route>
       </Routes>
     </NightProtocol>

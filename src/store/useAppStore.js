@@ -23,6 +23,7 @@ export const useAppStore = create(
         hasDoneAlibiToday: true 
       })),
       resetAlibiStatus: () => set({ hasDoneAlibiToday: false }),
+      clearAlibiLogs: () => set({ alibiLogs: [] }),
 
       incrementTime: () => set((state) => {
         const newTime = state.studyTime + 1;
