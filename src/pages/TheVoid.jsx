@@ -2,16 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'motion/react';
 import { supabase } from '../lib/supabase';
 
+const DEFAULT_POSTS = [
+  { id: 1, text: "Gue bener-bener capek disuruh les terus padahal otak gue udah gak masuk apa-apa.", hugs: 12 },
+  { id: 2, text: "Tryout hari ini hancur banget. Rasanya mau nyerah aja.", hugs: 5 },
+];
+
+const STORAGE_KEY = 'titikjeda-void-posts';
+
 export default function TheVoid() {
-  const [posts, setPosts] = useState([
-    { id: 1, text: "Gue bener-bener capek disuruh les terus padahal otak gue udah gak masuk apa-apa.", hugs: 12 },
-    { id: 2, text: "Tryout hari ini hancur banget. Rasanya mau nyerah aja.", hugs: 5 },
-  ]);
+  const [posts, setPosts] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error("Gagal membaca storage The Void:", e);
+    }
+    return DEFAULT_POSTS;
+  });
   const [newPost, setNewPost] = useState('');
   const [onlineUsers, setOnlineUsers] = useState(1);
   const [channel, setChannel] = useState(null);
   
   const controls = useAnimation();
+
+  // Sinkronisasi otomatis ke localStorage setiap kali posts berubah
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    } catch (e) {
+      console.error("Gagal menyimpan ke storage The Void:", e);
+    }
+  }, [posts]);
 
   useEffect(() => {
     // Inisialisasi Realtime Channel
@@ -24,10 +50,17 @@ export default function TheVoid() {
       setOnlineUsers(Object.keys(state).length || 1);
     })
     .on('broadcast', { event: 'new-post' }, (payload) => {
-      setPosts((current) => [payload.payload, ...current]);
+      if (payload?.payload) {
+        setPosts((current) => {
+          if (current.some(p => p.id === payload.payload.id)) return current;
+          return [payload.payload, ...current];
+        });
+      }
     })
     .on('broadcast', { event: 'new-hug' }, (payload) => {
-      setPosts((current) => current.map(p => p.id === payload.payload.id ? { ...p, hugs: p.hugs + 1 } : p));
+      if (payload?.payload?.id) {
+        setPosts((current) => current.map(p => p.id === payload.payload.id ? { ...p, hugs: (p.hugs || 0) + 1 } : p));
+      }
     })
     .subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {

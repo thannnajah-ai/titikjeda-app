@@ -77,6 +77,15 @@ export default function Layout() {
            >
              [DEV] RESET 1 SOAL (STATUS)
            </button>
+           <button 
+            onClick={() => {
+              localStorage.removeItem('titikjeda-void-posts');
+              window.location.reload();
+            }}
+            className="w-full text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-950 transition-colors cursor-pointer"
+           >
+             [DEV] RESET THE VOID (POSTS)
+           </button>
         </div>
       </nav>
 
