@@ -84,7 +84,7 @@ Kasih tamparan realita objektif dan instruksi Pareto 80/20 tajam singkat (3 kali
           'X-Title': 'TitikJeda'
         },
         body: JSON.stringify({
-          model: 'nvidia/nemotron-3.5-lightning:free',
+          model: 'openrouter/free',
           messages: [{ role: 'system', content: prompt }]
         })
       });

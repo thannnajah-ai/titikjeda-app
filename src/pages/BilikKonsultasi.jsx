@@ -17,6 +17,26 @@ export default function BilikKonsultasi() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const getContextualReply = (userMsg) => {
+    const msg = userMsg.toLowerCase().trim();
+    if (msg.includes('bunuh diri') || msg.includes('mati') || msg.includes('akhiri hidup') || msg.includes('self harm')) {
+      return "Bro, dengerin gue baik-baik. Beban lu mungkin terasa berat banget sekarang, tapi tolong jangan sendirian. Hubungi orang dewasa yang lu percaya atau layanan konseling krisis sekarang. Hidup lu jauh lebih berharga daripada ujian apa pun.";
+    }
+    if (msg.includes('capek') || msg.includes('lelah') || msg.includes('burnout') || msg.includes('stres') || msg.includes('pusing') || msg.includes('berat')) {
+      return "Gue paham banget rasanya. Belajar terus-terusan tanpa jeda emang bikin otak panas. Malam ini istirahat dulu, lu bukan robot. Lu mau cerita apa yang paling bikin lu kewalahan?";
+    }
+    if (msg.includes('takut') || msg.includes('cemas') || msg.includes('gagal') || msg.includes('pesimis') || msg.includes('anxiety') || msg.includes('insecure')) {
+      return "Wajar banget punya rasa cemas, semua pejuang UTBK pasti ngerasain fase ini. Yang penting bukan menghilangkan takutnya, tapi tetap konsisten satu soal per hari. Apa bagian materi yang paling bikin lu minder?";
+    }
+    if (msg.includes('skor') || msg.includes('to') || msg.includes('tryout') || msg.includes('anjlok') || msg.includes('turun') || msg.includes('nilai')) {
+      return "Skor TO naik turun itu hal biasa dalam proses adaptasi IRT. Jangan dinilai sebagai vonis kegagalan, tapi jadikan kompas evaluasi. Terapkan Pareto 80/20 di materi yang sering lu salah.";
+    }
+    if (msg.includes('halo') || msg.includes('hai') || msg.includes('hei') || msg.includes('test') || msg.length < 5) {
+      return "Halo! Gue di sini, siap dengerin curhat lu. Ada uneg-uneg soal tryout, target kampus, atau lagi ngerasa stuck belajar hari ini?";
+    }
+    return "Gue dengerin kok. Wajar banget kalau proses persiapan UTBK ini bikin emosi naik-turun. Tarik napas dulu sejenak, jangan terlalu keras sama diri sendiri. Ceritain apa yang lagi ngeganjel di pikiran lu.";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -26,11 +46,15 @@ export default function BilikKonsultasi() {
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setIsLoading(true);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4500);
+
     try {
       const systemPrompt = `Kamu adalah kating untuk curhat capek belajar/UTBK. Aturan: 1) Balas SINGKAT (1-3 kalimat). 2) JANGAN LEBAY, maks 1 emoji. 3) Bahasa gaul santai (gue/lu). 4) BATASAN TOPIK: Jika user bahas hal di luar sekolah (cinta, politik), alihkan kembali ke sekolah/UTBK secara halus. 5) PROTOKOL KRISIS (SANGAT PENTING): Jika user menyebut hal berbahaya (narkoba, bunuh diri, kekerasan, kejahatan), JANGAN pakai emoji satupun. JANGAN alihkan ke pelajaran karena itu konyol/ngelantur. Langsung berikan respons SERIUS dan tegas menyuruhnya mencari bantuan profesional/orang terdekat. Contoh: "Bro, gue cuma AI, tapi itu urusan yang bahaya dan serius banget. Tolong jangan lakuin itu dan cari bantuan profesional atau cerita ke orang dewasa yang lu percaya. Gue nggak bisa bantu kalau urusan begini."${aiMemory ? `\n6) PENTING! MEMORI SESI SEBELUMNYA: "${aiMemory}". Gunakan konteks ini untuk menjawab seakan-akan kamu mengingat obrolan kalian sebelumnya agar terasa lebih personal.` : ''}`;
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
@@ -38,7 +62,7 @@ export default function BilikKonsultasi() {
           'X-Title': 'TitikJeda'
         },
         body: JSON.stringify({
-          model: 'nvidia/nemotron-3.5-lightning:free',
+          model: 'openrouter/free',
           messages: [
             { role: 'system', content: systemPrompt },
             ...messages.map(m => ({ role: m.role, content: m.text })),
@@ -47,6 +71,7 @@ export default function BilikKonsultasi() {
         })
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
       
       if (!response.ok) {
@@ -54,15 +79,17 @@ export default function BilikKonsultasi() {
       }
 
       if (data.choices && data.choices[0] && data.choices[0].message) {
-        setMessages(prev => [...prev, { role: 'assistant', text: data.choices[0].message.content }]);
+        setMessages(prev => [...prev, { role: 'assistant', text: data.choices[0].message.content.trim() }]);
       } else {
         throw new Error("Invalid response");
       }
     } catch (error) {
-      console.error(error);
+      clearTimeout(timeoutId);
+      console.warn("Using contextual mentor fallback:", error.message || error.name);
+      const fallbackReply = getContextualReply(userMessage);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        text: 'Santai dulu, jangan terlalu keras sama diri sendiri. Tarik napas panjang, minum air dulu. Ceritain pelan-pelan apa yang bikin kamu paling cemas hari ini.' 
+        text: fallbackReply 
       }]);
     } finally {
       setIsLoading(false);
@@ -73,11 +100,15 @@ export default function BilikKonsultasi() {
     if (messages.length <= 1) return; // Belum ada obrolan
     setIsLoading(true);
     
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
     try {
       const summaryPrompt = "Berdasarkan seluruh percakapan kita di atas, berikan HANYA 1 KALIMAT SINGKAT yang merangkum kondisi mental/belajar anak ini (contoh: 'Anak ini trauma dengan Matematika tapi masih semangat', atau 'Dia sedang sangat lelah karena tryout hancur'). Jangan tambahkan kata-kata lain selain ringkasan 1 kalimat tersebut.";
       
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
@@ -85,7 +116,7 @@ export default function BilikKonsultasi() {
           'X-Title': 'TitikJeda'
         },
         body: JSON.stringify({
-          model: 'inclusionai/ling-3.0-flash-fin:free',
+          model: 'openrouter/free',
           messages: [
             ...messages.map(m => ({ role: m.role, content: m.text })),
             { role: 'user', content: summaryPrompt }
@@ -93,20 +124,29 @@ export default function BilikKonsultasi() {
         })
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
+      let memory = "Siswa sedang berjuang mengatasi stres persiapan UTBK.";
       if (data.choices && data.choices[0] && data.choices[0].message) {
-        const memory = data.choices[0].message.content.trim();
-        setAiMemory(memory);
-        
-        setIsEndingSession(true);
-        setTimeout(() => {
-          setIsEndingSession(false);
-          setMessages([{ role: 'assistant', text: `[SESI DIAKHIRI. INGATAN DISIMPAN: "${memory}"] SAMPAI JUMPA BESOK!` }]);
-        }, 2000);
+        memory = data.choices[0].message.content.trim();
       }
+      
+      setAiMemory(memory);
+      setIsEndingSession(true);
+      setTimeout(() => {
+        setIsEndingSession(false);
+        setMessages([{ role: 'assistant', text: `[SESI DIAKHIRI. INGATAN DISIMPAN: "${memory}"] SAMPAI JUMPA BESOK!` }]);
+      }, 2000);
     } catch (error) {
-      console.error(error);
-      alert("GAGAL MENGAKHIRI SESI: " + error.message);
+      clearTimeout(timeoutId);
+      console.warn("Fallback summary used:", error.message || error.name);
+      const fallbackMemory = "Siswa sedang berjuang mengatasi kelelahan belajar UTBK dan perlu fokus bertahap.";
+      setAiMemory(fallbackMemory);
+      setIsEndingSession(true);
+      setTimeout(() => {
+        setIsEndingSession(false);
+        setMessages([{ role: 'assistant', text: `[SESI DIAKHIRI. INGATAN DISIMPAN: "${fallbackMemory}"] SAMPAI JUMPA BESOK!` }]);
+      }, 2000);
     } finally {
       setIsLoading(false);
     }
