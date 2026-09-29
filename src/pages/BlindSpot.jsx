@@ -5,39 +5,45 @@ import { Target, TrendingDown, AlertOctagon, CheckCircle2 } from 'lucide-react';
 const analyzeReality = (scoreNum, campusTarget) => {
   const targetLower = (campusTarget || '').toLowerCase();
   
-  // Estimasi passing grade rata-rata kampus tier atas
-  let targetThreshold = 660;
+  // Deteksi estimasi passing grade rata-rata kampus
+  let targetThreshold = 650;
+  const campusClean = (campusTarget || 'KAMPUS TARGET').trim().toUpperCase();
+
   if (targetLower.includes('itb') || targetLower.includes('ui') || targetLower.includes('ugm')) {
-    targetThreshold = 690;
+    targetThreshold = 695;
   } else if (targetLower.includes('its') || targetLower.includes('unair') || targetLower.includes('undip') || targetLower.includes('unpad') || targetLower.includes('brawijaya') || targetLower.includes('ub')) {
-    targetThreshold = 640;
+    targetThreshold = 645;
+  } else if (targetLower.includes('ipb') || targetLower.includes('uns') || targetLower.includes('upi') || targetLower.includes('unj') || targetLower.includes('unhas') || targetLower.includes('usu')) {
+    targetThreshold = 615;
+  } else {
+    targetThreshold = 630;
   }
 
   const gap = targetThreshold - scoreNum;
 
-  if (scoreNum >= targetThreshold + 20) {
+  if (scoreNum >= targetThreshold + 25) {
     return {
       status: 'ZONA AMAN SEMENTARA',
       statusColor: 'text-emerald-600',
       borderColor: 'border-emerald-600',
       bgTag: 'bg-emerald-600 text-white',
-      message: `Skor lu ${scoreNum} udah melampaui estimasi passing grade ${campusTarget} (~${targetThreshold}). Tapi jangan sombong dulu; UTBK itu arena saling sikut antar orang pintar yang selisih nilainya cuma koma di sistem IRT. Terapkan Pareto 80/20: sikat habis 20% tipe soal paling krusial di Penalaran Matematika dan Literasi Inggris yang jadi penentu ranking atas. Lengah sehari lu bisa kegusur ribuan orang!`
+      message: `Skor lu ${scoreNum} udah surplus +${scoreNum - targetThreshold} poin di atas estimasi batas aman ${campusClean} (~${targetThreshold}). Tapi jangan keburu jumawa; di sistem IRT UTBK, selisih nol koma bisa menggeser ribuan ranking dalam sekejap.\n\nTerapkan hukum Pareto 80/20: pertahankan 20% tipe soal paling krusial di Penalaran Matematika dan Literasi Bahasa Inggris yang jadi penentu peringkat kuartil atas. Jangan biarkan ritme lu kendor sehari pun!`
     };
-  } else if (scoreNum >= targetThreshold - 40) {
+  } else if (scoreNum >= targetThreshold - 35) {
     return {
       status: 'ZONA PERSAINGAN KETAT',
       statusColor: 'text-amber-600',
       borderColor: 'border-amber-500',
       bgTag: 'bg-amber-500 text-black',
-      message: `Skor ${scoreNum} buat masuk ${campusTarget} (estimasi ~${targetThreshold}) masih di zona abu-abu: tipis antara tembus dan terpental (gap ${gap > 0 ? '-' + gap : '+' + Math.abs(gap)} poin). Lu masih sering buang energi di 80% materi receh. Mulai sekarang fokus kuasai 20% materi dengan frekuensi kemunculan tertinggi (Fungsi Kuadrat, Silogisme kategorial, & Kalimat Efektif PUEBI) biar nilai lu terdongkrak menembus batas aman 720+!`
+      message: `Skor ${scoreNum} buat masuk ${campusClean} (estimasi ~${targetThreshold}) ada di zona paling berdarah: lu cuma selisih tipis (${gap > 0 ? '-' + gap : '+' + Math.abs(gap)} poin) dari ambang batas aman. Di zona ini ada puluhan ribu pejuang lain dengan nilai yang identik.\n\nStop buang waktu menghafal rumus-rumus langka yang jarang keluar. Sikat 20% materi dengan frekuensi kemunculan tertinggi: Fungsi Kuadrat, Silogisme Kategorial, dan PUEBI Kalimat Efektif agar skor terdongkrak menembus 720+!`
     };
-  } else if (scoreNum >= 500) {
+  } else if (scoreNum >= 480) {
     return {
       status: 'ZONA RAWAN GAGAL',
       statusColor: 'text-red-600',
       borderColor: 'border-red-600',
       bgTag: 'bg-red-600 text-white',
-      message: `Realita objektif: skor ${scoreNum} dengan target ${campusTarget} itu gap-nya masih lebar (${gap} poin di bawah rata-rata aman). Berhenti coba-coba latihan soal tingkat dewa yang bikin minder; kuasai dulu 20% konsep fundamental Pareto yang PASTI keluar di UTBK (aljabar dasar, penarikan kesimpulan modus ponens/tollens, dan ide pokok teks). Wajib selesaikan minimal 3 paket soal tuntas per hari!`
+      message: `Tamparan realita: skor ${scoreNum} vs target ${campusClean} (~${targetThreshold}) memiliki gap defisit -${gap} poin. Ini bukan jarak yang bisa ditutup hanya dengan doa atau sekadar menonton video santai tanpa corat-coret sendiri.\n\nEksekusi Pareto 80/20: kuasai tuntas 20% konsep fundamental yang PASTI menyumbang poin di UTBK (Aljabar dasar, Modus Ponens/Tollens, dan Ide Pokok Teks). Wajib selesaikan minimal 3 paket soal tuntas per hari mulai sekarang!`
     };
   } else {
     return {
@@ -45,7 +51,7 @@ const analyzeReality = (scoreNum, campusTarget) => {
       statusColor: 'text-red-600',
       borderColor: 'border-red-600',
       bgTag: 'bg-red-600 text-white',
-      message: `Alarm bahaya: skor ${scoreNum} itu sinyal darurat jika target lu tetap ${campusTarget}. Kalau pola belajar lu masih pasif kayak zombie scrolling medsos, mimpi ini bakal tamat sebelum ujian dimulai. Lu kehilangan poin di soal-soal termudah yang seharusnya jadi lumbung nilai. Stop semua distraksi, matikan notifikasi HP, dan mulai babat konsep dasar dari nol sekarang juga!`
+      message: `Alarm bahaya mutlak: skor ${scoreNum} dengan target ${campusClean} (~${targetThreshold}) adalah sinyal darurat (defisit -${gap} poin). Jika gaya belajar lu masih pasif layaknya zombie scrolling medsos, mimpi ini akan kandas sebelum hari ujian tiba.\n\nLu masih kehilangan poin di soal-soal termudah yang seharusnya jadi lumbung nilai gratis. Matikan notifikasi HP, hentikan semua alasan, dan babat konsep dasar dari nol sekarang juga!`
     };
   }
 };
@@ -63,50 +69,13 @@ export default function BlindSpot() {
     setLoading(true);
     setResultData(null);
 
+    // Snappy micro-computation 280ms agar terasa ada kalkulasi tanpa delay
+    await new Promise(resolve => setTimeout(resolve, 280));
+
     const scoreNum = Number(score);
-    const localAnalysis = analyzeReality(scoreNum, campus);
-
-    // Timeout cepat 3.5 detik untuk API eksternal agar UI tidak pernah macet
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-    try {
-      const prompt = `User adalah siswa pejuang UTBK. Skor TO: ${score}. Target kampus: ${campus}.
-Kasih tamparan realita objektif dan instruksi Pareto 80/20 tajam singkat (3 kalimat) gaya lu-gue kating galak tapi peduli.`;
-
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'TitikJeda'
-        },
-        body: JSON.stringify({
-          model: 'openrouter/free',
-          messages: [{ role: 'system', content: prompt }]
-        })
-      });
-
-      clearTimeout(timeoutId);
-      const data = await response.json();
-      
-      if (response.ok && data.choices && data.choices[0]?.message?.content) {
-        setResultData({
-          ...localAnalysis,
-          message: data.choices[0].message.content.trim()
-        });
-      } else {
-        setResultData(localAnalysis);
-      }
-    } catch (error) {
-      clearTimeout(timeoutId);
-      console.warn("Fast Pareto Reality Engine activated:", error.name);
-      setResultData(localAnalysis);
-    } finally {
-      setLoading(false);
-    }
+    const analysis = analyzeReality(scoreNum, campus);
+    setResultData(analysis);
+    setLoading(false);
   };
 
   return (

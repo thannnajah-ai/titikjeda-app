@@ -22,14 +22,20 @@ export default function BilikKonsultasi() {
     if (msg.includes('bunuh diri') || msg.includes('mati') || msg.includes('akhiri hidup') || msg.includes('self harm')) {
       return "Bro, dengerin gue baik-baik. Beban lu mungkin terasa berat banget sekarang, tapi tolong jangan sendirian. Hubungi orang dewasa yang lu percaya atau layanan konseling krisis sekarang. Hidup lu jauh lebih berharga daripada ujian apa pun.";
     }
-    if (msg.includes('capek') || msg.includes('lelah') || msg.includes('burnout') || msg.includes('stres') || msg.includes('pusing') || msg.includes('berat')) {
+    if (msg.includes('capek') || msg.includes('lelah') || msg.includes('burnout') || msg.includes('stres') || msg.includes('pusing') || msg.includes('berat') || msg.includes('mager')) {
       return "Gue paham banget rasanya. Belajar terus-terusan tanpa jeda emang bikin otak panas. Malam ini istirahat dulu, lu bukan robot. Lu mau cerita apa yang paling bikin lu kewalahan?";
     }
-    if (msg.includes('takut') || msg.includes('cemas') || msg.includes('gagal') || msg.includes('pesimis') || msg.includes('anxiety') || msg.includes('insecure')) {
+    if (msg.includes('takut') || msg.includes('cemas') || msg.includes('gagal') || msg.includes('pesimis') || msg.includes('anxiety') || msg.includes('insecure') || msg.includes('minder')) {
       return "Wajar banget punya rasa cemas, semua pejuang UTBK pasti ngerasain fase ini. Yang penting bukan menghilangkan takutnya, tapi tetap konsisten satu soal per hari. Apa bagian materi yang paling bikin lu minder?";
     }
     if (msg.includes('skor') || msg.includes('to') || msg.includes('tryout') || msg.includes('anjlok') || msg.includes('turun') || msg.includes('nilai')) {
       return "Skor TO naik turun itu hal biasa dalam proses adaptasi IRT. Jangan dinilai sebagai vonis kegagalan, tapi jadikan kompas evaluasi. Terapkan Pareto 80/20 di materi yang sering lu salah.";
+    }
+    if (msg.includes('snbt') || msg.includes('utbk') || msg.includes('snbp') || msg.includes('ptn') || msg.includes('kampus')) {
+      return "Persaingan PTN emang brutal, tapi kuncinya bukan belajar 14 jam sehari sampai tumbang. Cukup konsisten 2-3 jam fokus tanpa distraksi tiap hari. Kampus impian lu apa nih sekarang?";
+    }
+    if (msg.includes('matematika') || msg.includes('pu') || msg.includes('pk') || msg.includes('pbm') || msg.includes('ppu')) {
+      return "Subtes itu emang momok buat banyak orang. Rahasianya jangan langsung hafal rumus rumit; kuasai pola logika dasarnya dulu. Kalau ketemu soal sulit, bedah pembahasannya langkah demi langkah.";
     }
     if (msg.includes('halo') || msg.includes('hai') || msg.includes('hei') || msg.includes('test') || msg.length < 5) {
       return "Halo! Gue di sini, siap dengerin curhat lu. Ada uneg-uneg soal tryout, target kampus, atau lagi ngerasa stuck belajar hari ini?";
@@ -47,7 +53,7 @@ export default function BilikKonsultasi() {
     setIsLoading(true);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4500);
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
 
     try {
       const systemPrompt = `Kamu adalah kating untuk curhat capek belajar/UTBK. Aturan: 1) Balas SINGKAT (1-3 kalimat). 2) JANGAN LEBAY, maks 1 emoji. 3) Bahasa gaul santai (gue/lu). 4) BATASAN TOPIK: Jika user bahas hal di luar sekolah (cinta, politik), alihkan kembali ke sekolah/UTBK secara halus. 5) PROTOKOL KRISIS (SANGAT PENTING): Jika user menyebut hal berbahaya (narkoba, bunuh diri, kekerasan, kejahatan), JANGAN pakai emoji satupun. JANGAN alihkan ke pelajaran karena itu konyol/ngelantur. Langsung berikan respons SERIUS dan tegas menyuruhnya mencari bantuan profesional/orang terdekat. Contoh: "Bro, gue cuma AI, tapi itu urusan yang bahaya dan serius banget. Tolong jangan lakuin itu dan cari bantuan profesional atau cerita ke orang dewasa yang lu percaya. Gue nggak bisa bantu kalau urusan begini."${aiMemory ? `\n6) PENTING! MEMORI SESI SEBELUMNYA: "${aiMemory}". Gunakan konteks ini untuk menjawab seakan-akan kamu mengingat obrolan kalian sebelumnya agar terasa lebih personal.` : ''}`;
