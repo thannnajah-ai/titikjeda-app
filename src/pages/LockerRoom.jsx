@@ -1,9 +1,157 @@
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useAppStore } from '../store/useAppStore';
+import { X, BookOpen, AlertTriangle } from 'lucide-react';
+
+const CHEAT_SHEETS = [
+  {
+    id: 'pu',
+    code: 'DOK-01 // PU',
+    title: 'Penalaran Umum',
+    desc: 'Logika Silogisme, Analitik, & Pola Bilangan.',
+    sections: [
+      {
+        heading: '1. Tiga Hukum Penarikan Kesimpulan Mutlak',
+        rules: [
+          { label: 'Modus Ponens', formula: 'Premis: (p → q) & (p)  ==>  Kesimpulan: (q)', note: 'Jika p terjadi, maka q pasti terjadi.' },
+          { label: 'Modus Tollens', formula: 'Premis: (p → q) & (~q) ==>  Kesimpulan: (~p)', note: 'Jika q tidak terjadi, maka p pasti tidak terjadi.' },
+          { label: 'Silogisme', formula: 'Premis: (p → q) & (q → r) ==> Kesimpulan: (p → r)', note: 'Rantai sebab-akibat langsung.' },
+        ],
+        warning: 'JEBAKAN UTAMA: Jika p → q, dan diketahui ~p (p tidak terjadi), maka TIDAK DAPAT DISIMPULKAN ~q (q bisa saja tetap terjadi karena sebab lain).'
+      },
+      {
+        heading: '2. Hukum Kuantor (Semua vs Sebagian)',
+        rules: [
+          { label: 'Semua (Universal)', formula: 'Semua anggota kelompok A memiliki sifat B.', note: 'Ingkaran: "Ada minimal satu anggota A yang TIDAK memiliki sifat B".' },
+          { label: 'Sebagian / Beberapa', formula: 'Minimal ada satu anggota (≥ 1).', note: 'PERINGATAN: "Sebagian" BUKAN berarti "tidak semuanya". Jika semua A adalah B, pernyataan "sebagian A adalah B" tetap BENAR secara logika formal.' }
+        ]
+      },
+      {
+        heading: '3. Pola Barisan & Deret Cepat',
+        rules: [
+          { label: 'Uji Selisih Bertingkat', formula: 'Larik 1: beda beraturan (+2, +4, +6...). Larik 2: percepatan beda (+2, +2...).' },
+          { label: 'Pola Melompat (Interleaved)', formula: 'Uji suku ganjil (1, 3, 5) dan suku genap (2, 4, 6) secara terpisah bila angka berfluktuasi naik-turun.' },
+          { label: 'Operasi Campuran', formula: 'Pola berulang dua operasi bergantian: (×2, -3, ×2, -3).' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pk',
+    code: 'DOK-02 // PK',
+    title: 'Pengetahuan Kuantitatif',
+    desc: 'Fungsi Kuadrat, Peluang, & Statistika Dasar.',
+    sections: [
+      {
+        heading: '1. Fungsi Kuadrat & Diskriminan (D = b² - 4ac)',
+        rules: [
+          { label: 'D > 0', formula: 'Grafik memotong sumbu-X di 2 titik berbeda real.' },
+          { label: 'D = 0', formula: 'Grafik menyinggung sumbu-X di 1 titik (akar kembar).' },
+          { label: 'D < 0', formula: 'Grafik tidak pernah memotong sumbu-X.' },
+          { label: 'Definit Positif / Negatif', formula: 'D < 0 dan a > 0 ==> Selalu di atas sumbu-X (positif). D < 0 dan a < 0 ==> Selalu di bawah sumbu-X (negatif).' },
+          { label: 'Titik Puncak (Xp, Yp)', formula: 'Xp = -b / (2a)  |  Yp = -D / (4a) atau f(Xp)' }
+        ]
+      },
+      {
+        heading: '2. Rumus Aljabar Sakti (Hemat 2 Menit)',
+        rules: [
+          { label: 'Selisih Kuadrat', formula: 'a² - b² = (a - b)(a + b)', note: 'Gunakan untuk menyederhanakan pecahan rumit seketika.' },
+          { label: 'Kuadrat Suku Dua', formula: '(a ± b)² = a² ± 2ab + b²', note: 'Ingat: a² + b² = (a + b)² - 2ab' },
+          { label: 'Selisih Pangkat Tiga', formula: 'a³ - b³ = (a - b)(a² + ab + b²)' }
+        ]
+      },
+      {
+        heading: '3. Kombinatorika & Pengaruh Transformasi Data',
+        rules: [
+          { label: 'Permutasi vs Kombinasi', formula: 'Urutan penting (Ketua/Wakil) = P(n, r) = n!/(n-r)! | Urutan bebas (Delegasi) = C(n, r) = n!/[r!(n-r)!]' },
+          { label: 'Operasi Tambah/Kurang Data (+k)', formula: 'Rata-rata & Median BERUBAH (+k). Jangkauan & Simpangan Baku TETAP (tidak berubah!).' },
+          { label: 'Operasi Kali/Bagi Data (×k)', formula: 'SEMUA ukuran pemusatan dan penyebaran (Mean, Median, Jangkauan, Simpangan) DIKALI k.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pbi',
+    code: 'DOK-03 // LITINDO',
+    title: 'Literasi Bahasa Indonesia',
+    desc: 'Ide Pokok, Simpulan Teks, & Majas.',
+    sections: [
+      {
+        heading: '1. Menemukan Gagasan Utama (Teknik Cepat)',
+        rules: [
+          { label: 'Paragraf Deduktif (Awal)', formula: 'Kalimat 1 adalah induk pikiran. Kalimat 2 berisi kata repetisi atau kata rujukan ("hal ini", "tersebut", "ia").' },
+          { label: 'Paragraf Induktif (Akhir)', formula: 'Kalimat terakhir memuat konjungsi kesimpulan ("oleh karena itu", "dengan demikian", "jadi").' },
+          { label: 'Penyaring Jawaban Salah', formula: 'Coret opsi yang "Terlalu Sempit" (hanya satu fakta penjelas) atau "Terlalu Luas" (melampaui topik bacaan).' }
+        ]
+      },
+      {
+        heading: '2. Inferensi Teks vs Asumsi Liar',
+        rules: [
+          { label: 'Hukum Pembuktian Teks', formula: 'Kesimpulan tersirat HARUS 100% didukung oleh data teks. Jangan memakai logika luar yang tidak tertulis!' },
+          { label: 'Sikap / Nada Penulis (Tone)', formula: 'Objektif (fakta murni), Kritis (menyoroti kelemahan/risiko), Optimistis (menaruh harapan positif).' }
+        ]
+      },
+      {
+        heading: '3. Kalimat Efektif & PUEBI Krusial',
+        rules: [
+          { label: 'Wajib Ber-Subjek & Ber-Predikat', formula: 'Hindari kalimat buntung akibat subjek didahului preposisi ("Dalam penelitian ini menemukan..." -> SALAH. Hapus "Dalam").' },
+          { label: 'Jebakan Perluasan "Yang"', formula: '"Siswa yang belajar di perpustakaan..." bukan kalimat utuh jika tidak ada predikat lanjutan.' },
+          { label: 'Konjungsi Intrakalimat', formula: '"Sehingga", "sedangkan", "karena" TIDAK BOLEH diletakkan di awal kalimat setelah titik.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pbe',
+    code: 'DOK-04 // LITING',
+    title: 'Literasi Bahasa Inggris',
+    desc: 'Main Idea, Inference, & Synonym.',
+    sections: [
+      {
+        heading: '1. Main Idea & Author Purpose Tactics',
+        rules: [
+          { label: 'Skimming Taktis', formula: 'Baca 2 kalimat awal paragraf 1 + kalimat pertama tiap paragraf isi + kalimat terakhir paragraf penutup.' },
+          { label: 'Purpose Verbs', formula: 'To illustrate (memberi contoh nyata), To convince (meyakinkan opini), To explain (memaparkan mekanisme), To contrast (membandingkan dua kutub).' }
+        ]
+      },
+      {
+        heading: '2. Inference & Implication Questions',
+        rules: [
+          { label: 'Kata Kunci Soal', formula: '"It can be inferred from...", "The passage implies that...", "Which of the following is most likely true?"' },
+          { label: 'Eliminasi Opsi Ekstrem', formula: 'Hindari opsi yang mengandung kata mutlak tanpa alasan kuat: always, never, completely, impossible, only.' },
+          { label: 'Restatement Trap', formula: 'Jawaban yang benar untuk soal inferensi biasanya BUKAN copas kata demi kata dari teks, melainkan parafrase logis.' }
+        ]
+      },
+      {
+        heading: '3. Vocabulary in Context',
+        rules: [
+          { label: 'Makna Kontekstual vs Literal', formula: 'Kata diuji BUKAN definisi kamus dasarnya, melainkan maknanya dalam relasi kalimat tersebut.' },
+          { label: 'Clue Kata Penghubung', formula: 'Perhatikan konjungsi kontras (however, although, despite) vs penjelas (moreover, in other words) di sekitar kata uji.' }
+        ]
+      }
+    ]
+  }
+];
 
 export default function LockerRoom() {
   const bloodOath = useAppStore(state => state.bloodOath);
+  const [activeCheatSheet, setActiveCheatSheet] = useState(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setActiveCheatSheet(null);
+      }
+    };
+    if (activeCheatSheet) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [activeCheatSheet]);
   
   return (
     <motion.div 
@@ -52,27 +200,29 @@ export default function LockerRoom() {
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        {[
-          { title: 'Penalaran Umum', desc: 'Logika Silogisme, Analitik, & Pola Bilangan.' },
-          { title: 'Pengetahuan Kuantitatif', desc: 'Fungsi Kuadrat, Peluang, & Statistika Dasar.' },
-          { title: 'Literasi Bahasa Indonesia', desc: 'Ide Pokok, Simpulan Teks, & Majas.' },
-          { title: 'Literasi Bahasa Inggris', desc: 'Main Idea, Inference, & Synonym.' },
-        ].map((item, i) => (
+        {CHEAT_SHEETS.map((item) => (
           <motion.div 
-            key={i} 
+            key={item.id} 
             variants={{
               hidden: { opacity: 0, y: 10, scale: 0.98 },
               show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: "easeOut" } }
             }}
+            onClick={() => setActiveCheatSheet(item)}
             className="p-6 border-4 border-zinc-950 bg-white hover:bg-zinc-950 hover:text-white group active:scale-[0.97] transition-transform flex flex-col cursor-pointer"
           >
+            <div className="text-xs font-mono font-black text-zinc-400 group-hover:text-zinc-400 uppercase tracking-widest mb-1">
+              {item.code}
+            </div>
             <h3 className="font-black uppercase text-xl mb-2 text-zinc-950 group-hover:text-white">{item.title}</h3>
             <p className="text-sm text-zinc-600 group-hover:text-zinc-300 font-mono font-bold uppercase leading-relaxed mb-6 flex-1">{item.desc}</p>
             <button 
-              onClick={(e) => { e.stopPropagation(); alert('Materi Cheat-Sheet untuk ' + item.title + ' sedang disusun. Nantikan update berikutnya!'); }}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setActiveCheatSheet(item); 
+              }}
               className="text-sm font-black uppercase text-zinc-950 group-hover:text-white bg-zinc-200 group-hover:bg-zinc-800 px-4 py-2 self-start active:scale-[0.97] transition-transform"
             >
-              LIHAT CHEAT-SHEET
+              LIHAT CHEAT-SHEET ↗
             </button>
           </motion.div>
         ))}
@@ -112,6 +262,99 @@ export default function LockerRoom() {
           ))}
         </div>
       </motion.div>
+
+      {/* Industrial Brutalist Cheat-Sheet Modal */}
+      <AnimatePresence>
+        {activeCheatSheet && (
+          <div 
+            className="fixed inset-0 z-50 bg-zinc-950/80 flex items-center justify-center p-3 md:p-6"
+            onClick={() => setActiveCheatSheet(null)}
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-3xl max-h-[90vh] bg-white border-8 border-zinc-950 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="bg-zinc-950 text-white p-4 md:p-6 border-b-6 border-zinc-950 flex justify-between items-start gap-4">
+                <div>
+                  <div className="font-mono text-xs font-black uppercase tracking-widest text-zinc-400 mb-1">
+                    {activeCheatSheet.code}
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
+                    {activeCheatSheet.title}
+                  </h3>
+                  <p className="text-xs font-mono font-bold uppercase text-zinc-300 mt-2">
+                    {activeCheatSheet.desc}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveCheatSheet(null)}
+                  className="bg-white text-zinc-950 border-2 border-white px-3 py-1 font-mono font-black text-xs uppercase hover:bg-zinc-200 active:scale-[0.97] transition-transform flex items-center gap-1 shrink-0"
+                >
+                  <X className="w-4 h-4" strokeWidth={3} />
+                  <span>[ESC]</span>
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="overflow-y-auto p-4 md:p-6 space-y-6 font-mono">
+                {activeCheatSheet.sections.map((sec, idx) => (
+                  <div key={idx} className="border-4 border-zinc-950 bg-zinc-50 p-4 md:p-5">
+                    <div className="bg-zinc-950 text-white font-mono font-black text-xs md:text-sm uppercase px-3 py-1 inline-block mb-4">
+                      {sec.heading}
+                    </div>
+
+                    <div className="space-y-3">
+                      {sec.rules.map((rule, rIdx) => (
+                        <div key={rIdx} className="bg-white border-2 border-zinc-950 p-3">
+                          <div className="text-[11px] font-black uppercase text-zinc-500 mb-1 tracking-wider">
+                            // {rule.label}
+                          </div>
+                          <div className="text-sm font-black text-zinc-950 leading-relaxed">
+                            {rule.formula}
+                          </div>
+                          {rule.note && (
+                            <div className="text-xs font-bold text-zinc-700 mt-1.5 pt-1.5 border-t border-zinc-200">
+                              ℹ {rule.note}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {sec.warning && (
+                      <div className="mt-4 border-l-6 border-red-600 bg-red-50 p-3 flex gap-2 items-start">
+                        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" strokeWidth={2.5} />
+                        <div className="text-xs font-black text-red-950 leading-relaxed uppercase">
+                          {sec.warning}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="border-t-4 border-zinc-950 p-4 bg-zinc-100 flex items-center justify-between font-mono">
+                <span className="text-[11px] font-black uppercase tracking-wider text-zinc-500">
+                  TITIKJEDA PROTOKOL 80/20
+                </span>
+                <button
+                  onClick={() => setActiveCheatSheet(null)}
+                  className="bg-zinc-950 text-white px-5 py-2 font-black text-xs uppercase tracking-wider hover:bg-zinc-800 active:scale-[0.97] transition-transform"
+                >
+                  TUTUP DOKUMEN
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
+
