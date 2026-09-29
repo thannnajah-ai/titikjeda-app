@@ -16,8 +16,7 @@ export default function HabitHeatmap() {
   // Calculate total days to render (12 weeks = 84 days)
   const totalDays = 84;
   for (let i = totalDays - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(today.getDate() - i);
+    const d = new Date(today.getTime() - i * 86400000);
     const key = d.toISOString().split('T')[0];
     const dayOfWeek = (d.getDay() + 6) % 7; // 0 = Senin, 6 = Minggu
     daysList.push({
@@ -31,8 +30,7 @@ export default function HabitHeatmap() {
   // Calculate Streak
   let streak = 0;
   for (let i = 0; i < totalDays; i++) {
-    const d = new Date();
-    d.setDate(today.getDate() - i);
+    const d = new Date(today.getTime() - i * 86400000);
     const key = d.toISOString().split('T')[0];
     const st = habitHistory[key];
     if (st === 'passed' || st === 'alibi') {

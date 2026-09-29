@@ -190,24 +190,14 @@ export default function LockerRoom() {
       )}
 
       {/* Heatmap Konsistensi & Streak Disiplin */}
-      <motion.div 
-        variants={{
-          hidden: { opacity: 0, y: 10 },
-          show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } }
-        }}
-      >
+      <div>
         <HabitHeatmap />
-      </motion.div>
+      </div>
 
       {/* Soundscape & Binaural Beats Synthesizer */}
-      <motion.div 
-        variants={{
-          hidden: { opacity: 0, y: 10 },
-          show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } }
-        }}
-      >
+      <div>
         <SoundscapeMixer />
-      </motion.div>
+      </div>
 
       <motion.div 
         variants={{
