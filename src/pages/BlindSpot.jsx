@@ -1,14 +1,52 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Target, TrendingDown } from 'lucide-react';
+import { Target, TrendingDown, AlertOctagon, CheckCircle2 } from 'lucide-react';
 
-const generateFallbackRoasting = (scoreNum, campusTarget) => {
-  if (scoreNum >= 700) {
-    return `Skor lu ${scoreNum} udah masuk kategori tinggi, tapi persaingan ke ${campusTarget} itu medan pembantaian sesungguhnya. Jangan terlena sama nilai tryout di atas kertas. Terapkan prinsip Pareto 80/20: sikat habis 20% tipe soal paling krusial di Penalaran Matematika dan Literasi Inggris yang punya bobot IRT pembeda ranking. Jaga ritme, lengah sehari lu bisa kegusur ratusan orang.`;
-  } else if (scoreNum >= 550) {
-    return `Skor ${scoreNum} buat tembus ${campusTarget} masih di zona rawan. Lu masih sering buang-buang waktu berkutat di 80% materi receh yang jarang keluar. Mulai sekarang fokus ke 20% materi dengan frekuensi kemunculan tertinggi (Kalkulus dasar, Silogisme kategorial, & Kalimat Efektif PUEBI) biar skor lu terdongkrak ke 680+.`;
+const analyzeReality = (scoreNum, campusTarget) => {
+  const targetLower = (campusTarget || '').toLowerCase();
+  
+  // Estimasi passing grade rata-rata kampus tier atas
+  let targetThreshold = 660;
+  if (targetLower.includes('itb') || targetLower.includes('ui') || targetLower.includes('ugm')) {
+    targetThreshold = 690;
+  } else if (targetLower.includes('its') || targetLower.includes('unair') || targetLower.includes('undip') || targetLower.includes('unpad') || targetLower.includes('brawijaya') || targetLower.includes('ub')) {
+    targetThreshold = 640;
+  }
+
+  const gap = targetThreshold - scoreNum;
+
+  if (scoreNum >= targetThreshold + 20) {
+    return {
+      status: 'ZONA AMAN SEMENTARA',
+      statusColor: 'text-emerald-600',
+      borderColor: 'border-emerald-600',
+      bgTag: 'bg-emerald-600 text-white',
+      message: `Skor lu ${scoreNum} udah melampaui estimasi passing grade ${campusTarget} (~${targetThreshold}). Tapi jangan sombong dulu; UTBK itu arena saling sikut antar orang pintar yang selisih nilainya cuma koma di sistem IRT. Terapkan Pareto 80/20: sikat habis 20% tipe soal paling krusial di Penalaran Matematika dan Literasi Inggris yang jadi penentu ranking atas. Lengah sehari lu bisa kegusur ribuan orang!`
+    };
+  } else if (scoreNum >= targetThreshold - 40) {
+    return {
+      status: 'ZONA PERSAINGAN KETAT',
+      statusColor: 'text-amber-600',
+      borderColor: 'border-amber-500',
+      bgTag: 'bg-amber-500 text-black',
+      message: `Skor ${scoreNum} buat masuk ${campusTarget} (estimasi ~${targetThreshold}) masih di zona abu-abu: tipis antara tembus dan terpental (gap ${gap > 0 ? '-' + gap : '+' + Math.abs(gap)} poin). Lu masih sering buang energi di 80% materi receh. Mulai sekarang fokus kuasai 20% materi dengan frekuensi kemunculan tertinggi (Fungsi Kuadrat, Silogisme kategorial, & Kalimat Efektif PUEBI) biar nilai lu terdongkrak menembus batas aman 720+!`
+    };
+  } else if (scoreNum >= 500) {
+    return {
+      status: 'ZONA RAWAN GAGAL',
+      statusColor: 'text-red-600',
+      borderColor: 'border-red-600',
+      bgTag: 'bg-red-600 text-white',
+      message: `Realita objektif: skor ${scoreNum} dengan target ${campusTarget} itu gap-nya masih lebar (${gap} poin di bawah rata-rata aman). Berhenti coba-coba latihan soal tingkat dewa yang bikin minder; kuasai dulu 20% konsep fundamental Pareto yang PASTI keluar di UTBK (aljabar dasar, penarikan kesimpulan modus ponens/tollens, dan ide pokok teks). Wajib selesaikan minimal 3 paket soal tuntas per hari!`
+    };
   } else {
-    return `Dengan skor ${scoreNum}, impian masuk ${campusTarget} bakal tinggal angan-angan kalau pola belajar lu masih pasif kayak zombie scrolling. Lu kehilangan poin di soal-soal fundamental yang seharusnya jadi lumbung nilai termudah. Berhenti coba-coba soal tingkat dewa, kuasai dulu 20% rumus dasar Pareto yang PASTI keluar di UTBK!`;
+    return {
+      status: 'ALARM BAHAYA MUTLAK',
+      statusColor: 'text-red-600',
+      borderColor: 'border-red-600',
+      bgTag: 'bg-red-600 text-white',
+      message: `Alarm bahaya: skor ${scoreNum} itu sinyal darurat jika target lu tetap ${campusTarget}. Kalau pola belajar lu masih pasif kayak zombie scrolling medsos, mimpi ini bakal tamat sebelum ujian dimulai. Lu kehilangan poin di soal-soal termudah yang seharusnya jadi lumbung nilai. Stop semua distraksi, matikan notifikasi HP, dan mulai babat konsep dasar dari nol sekarang juga!`
+    };
   }
 };
 
@@ -16,23 +54,29 @@ export default function BlindSpot() {
   const [score, setScore] = useState('');
   const [campus, setCampus] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState('');
+  const [resultData, setResultData] = useState(null);
 
   const handleCheck = async (e) => {
     e.preventDefault();
     if (!score || !campus) return;
 
     setLoading(true);
+    setResultData(null);
+
+    const scoreNum = Number(score);
+    const localAnalysis = analyzeReality(scoreNum, campus);
+
+    // Timeout cepat 3.5 detik untuk API eksternal agar UI tidak pernah macet
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
     try {
-      const prompt = `User adalah siswa pejuang UTBK/SNBT. Skor TO terakhir: ${score}. Target kampus & jurusan: ${campus}.
-Tugas kamu: Berikan tamparan realita yang objektif, tajam, dan instruksi taktis Pareto 80/20.
-Aturan:
-1. Singkat padat (maksimal 3-4 kalimat).
-2. Gaya bahasa kasual gue/lu (seperti kakak tingkat galak tapi peduli dan realistis).
-3. Tanpa basa-basi dan tanpa emoji berlebihan.`;
+      const prompt = `User adalah siswa pejuang UTBK. Skor TO: ${score}. Target kampus: ${campus}.
+Kasih tamparan realita objektif dan instruksi Pareto 80/20 tajam singkat (3 kalimat) gaya lu-gue kating galak tapi peduli.`;
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
@@ -45,16 +89,21 @@ Aturan:
         })
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
+      
       if (response.ok && data.choices && data.choices[0]?.message?.content) {
-        setResult(data.choices[0].message.content.trim());
+        setResultData({
+          ...localAnalysis,
+          message: data.choices[0].message.content.trim()
+        });
       } else {
-        throw new Error(data.error?.message || "Model error");
+        setResultData(localAnalysis);
       }
     } catch (error) {
-      console.warn("AI generation fallback triggered:", error);
-      // Gunakan fallback cerdas berbasis aturan jika API OpenRouter sibuk/error
-      setResult(generateFallbackRoasting(Number(score), campus));
+      clearTimeout(timeoutId);
+      console.warn("Fast Pareto Reality Engine activated:", error.name);
+      setResultData(localAnalysis);
     } finally {
       setLoading(false);
     }
@@ -104,16 +153,26 @@ Aturan:
       </form>
 
       <AnimatePresence>
-        {result && (
+        {resultData && (
           <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="bg-white border-l-8 border-red-600 border-y-4 border-r-4 border-zinc-950 p-6"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            className={`bg-white border-l-8 ${resultData.borderColor} border-y-4 border-r-4 border-zinc-950 p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-mono`}
           >
+            <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-3 mb-4">
+              <span className={`text-xs font-black uppercase px-2.5 py-1 ${resultData.bgTag}`}>
+                {resultData.status}
+              </span>
+              <span className="text-xs font-bold text-zinc-500 uppercase">
+                TARGET: {campus.toUpperCase()}
+              </span>
+            </div>
+
             <div className="flex items-start gap-4">
-              <TrendingDown className="w-8 h-8 text-red-600 shrink-0 mt-1" strokeWidth={3} />
-              <p className="text-zinc-950 font-mono font-bold uppercase leading-relaxed text-sm md:text-base">
-                {result}
+              <TrendingDown className="w-7 h-7 text-red-600 shrink-0 mt-0.5" strokeWidth={3} />
+              <p className="text-zinc-950 font-bold uppercase leading-relaxed text-sm md:text-base whitespace-pre-line">
+                {resultData.message}
               </p>
             </div>
           </motion.div>
