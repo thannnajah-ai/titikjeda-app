@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'motion/react';
 import { supabase } from '../lib/supabase';
 
 export default function TheVoid() {
@@ -10,6 +10,7 @@ export default function TheVoid() {
   const [newPost, setNewPost] = useState('');
   const [onlineUsers, setOnlineUsers] = useState(1);
   const [channel, setChannel] = useState(null);
+  
   const controls = useAnimation();
 
   useEffect(() => {
@@ -51,11 +52,9 @@ export default function TheVoid() {
     await controls.start({ y: -100, opacity: 0, scale: 0.9, transition: { duration: 0.3, ease: "easeIn" } });
     
     const postData = { id: Date.now(), text: textToSubmit, hugs: 0 };
-    // Gunakan fungsi current agar selalu mendapat state terbaru
     setPosts((current) => [postData, ...current]);
     setNewPost('');
 
-    // Broadcast ke user lain secara instan
     if (channel) {
       channel.send({
         type: 'broadcast',
@@ -64,14 +63,11 @@ export default function TheVoid() {
       });
     }
 
-    // Reset posisi form secara kasat mata
     controls.set({ y: 50, opacity: 0, scale: 0.9 });
-    // Animasi muncul kembali
-    controls.start({ y: 0, opacity: 1, scale: 1, transition: { type: "spring", bounce: 0.4, duration: 0.5 } });
+    controls.start({ y: 0, opacity: 1, scale: 1, transition: { type: "spring", bounce: 0, duration: 0.3 } });
   };
 
   const handleHug = (id) => {
-    // Gunakan fungsi current agar tidak tertimpa state lama
     setPosts((current) => current.map(p => p.id === id ? { ...p, hugs: p.hugs + 1 } : p));
     
     if (channel) {
@@ -87,34 +83,35 @@ export default function TheVoid() {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className="max-w-2xl mx-auto space-y-10"
     >
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-100">The Void</h2>
-          <div className="flex items-center gap-2 px-3 py-1 bg-stone-900 rounded-full border border-stone-800">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span className="text-xs font-medium text-stone-400">{onlineUsers} jiwa sedang online</span>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-2 gap-4">
+          <h2 className="text-5xl font-black tracking-tighter text-zinc-950 uppercase leading-none">The Void</h2>
+          <div className="flex items-center gap-2 px-3 py-1 bg-zinc-950 border-4 border-zinc-950">
+            <span className="w-2 h-2 bg-white animate-pulse"></span>
+            <span className="text-xs font-mono font-bold text-white uppercase tracking-widest">{onlineUsers} JIWA ONLINE</span>
           </div>
         </div>
-        <p className="text-stone-400">Lempar rasa lelahmu ke kehampaan. Anonim, aman, dan akan menghilang seiring waktu.</p>
+        <p className="text-zinc-600 font-mono font-bold uppercase tracking-widest text-sm">Lempar rasa lelahmu ke kehampaan. Anonim dan rahasia.</p>
       </div>
 
-      <motion.form animate={controls} onSubmit={handlePost} className="relative">
+      <motion.form animate={controls} onSubmit={handlePost} className="relative border-4 border-zinc-950 bg-white p-2">
         <textarea 
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
-          placeholder="Apa yang bikin kamu capek hari ini?"
-          className="w-full bg-stone-900 border border-stone-800 rounded-2xl p-6 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-stone-700 resize-none text-stone-100 placeholder-stone-600 transition-all"
+          placeholder="APA YANG MEMBUATMU MUAK HARI INI?"
+          className="w-full bg-zinc-50 border-4 border-transparent p-4 min-h-[120px] focus:outline-none focus:border-zinc-950 resize-none text-zinc-950 font-mono font-bold text-lg uppercase placeholder-zinc-300 transition-colors"
+          spellCheck={false}
         />
-        <div className="flex justify-end mt-3">
+        <div className="flex justify-end mt-2">
           <button 
             type="submit"
             disabled={!newPost.trim()}
-            className="px-6 py-2 bg-stone-400 text-stone-950 hover:bg-stone-300 font-semibold rounded-full active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50"
+            className="px-8 py-3 bg-zinc-950 text-white font-black uppercase tracking-widest active:scale-[0.97] transition-transform disabled:opacity-50"
           >
-            Lepaskan
+            LEPASKAN
           </button>
         </div>
       </motion.form>
@@ -127,17 +124,17 @@ export default function TheVoid() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               key={post.id} 
-              className="p-6 bg-stone-900/40 backdrop-blur-sm rounded-2xl border border-stone-800/50 hover:border-stone-700/50 transition-colors"
+              className="p-6 bg-white border-4 border-zinc-950 hover:bg-zinc-50 transition-colors"
             >
-              <p className="text-stone-200 leading-relaxed text-lg mb-6">{post.text}</p>
-              <div className="flex items-center gap-4 border-t border-stone-800/50 pt-4">
+              <p className="text-zinc-950 font-mono font-bold uppercase leading-relaxed text-lg mb-6">{post.text}</p>
+              <div className="flex items-center gap-4 border-t-4 border-zinc-950 pt-4">
                 <motion.button 
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleHug(post.id)}
-                  className="flex items-center gap-2 text-stone-400 hover:text-stone-100 transition-colors"
+                  className="flex items-center gap-2 text-zinc-600 hover:text-zinc-950 transition-colors bg-zinc-200 px-4 py-1 font-black uppercase tracking-widest text-sm"
                 >
-                  <span className="text-xl">🫂</span>
-                  <span className="font-medium">{post.hugs} Pelukan</span>
+                  <span>🫂</span>
+                  <span>{post.hugs} Pelukan</span>
                 </motion.button>
               </div>
             </motion.div>

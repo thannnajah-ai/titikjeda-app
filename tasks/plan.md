@@ -1,28 +1,23 @@
-# Plan: TitikJeda v2.0 (The Empathy Update)
+# Plan: Anti-Zombie / Alibi (Modul 5)
 
-## Architecture & Dependencies
-1. **Supabase**: Butuh `@supabase/supabase-js` untuk manajemen WebSocket (Realtime).
-2. **Zustand Persist**: Menggunakan `zustand/middleware` untuk menyimpan *state* memori ke LocalStorage.
+## 1. Komponen Utama
+- `src/components/AlibiJournal.jsx`: Membongkar total desain modal pop-up lama menjadi benteng interogasi layar penuh (Industrial Brutalist).
+- Logika Validasi: Menyempurnakan pengecekan string dengan regex sederhana (panjang >= 20 dan jumlah spasi >= 3).
 
-## Implementation Order
-1. **Setup Supabase & Dependencies**
-   - Install package Supabase.
-   - Buat `src/lib/supabase.js`.
-   - Setup Environment Variables (Supabase URL & Anon Key).
+## 2. Urutan Implementasi
+1. **Refaktor UI & Styling:** 
+   - Hapus `backdrop-blur` dan ganti menjadi latar belakang `bg-zinc-950` solid (hitam mutlak tanpa tembus pandang).
+   - Ubah wadah (*container*) `AlibiJournal` menjadi layar penuh tanpa tombol silang (tidak bisa di-*close* kecuali valid).
+   - Ubah *textarea* menjadi gaya mesin ketik (monokrom, *border* tebal, tulisan *monospace* tajam).
+2. **Injeksi Emil's Motion:** 
+   - Pastikan kemunculan *AlibiJournal* instan (menghapus *framer-motion* transisi lambat yang tidak perlu).
+   - Tombol "SIMPAN JURNAL" menggunakan respons padat `active:scale-[0.97]` tanpa transisi perlambatan warna.
+3. **Penyempurnaan Validasi:**
+   - Menambahkan pengecekan: `logText.split(' ').length > 3`.
+   - Mengganti `alert()` standar *browser* dengan penandaan visual brutalist (misal: warna *border* berubah jadi merah tajam dan teks peringatan menyala jika gagal).
 
-2. **The Void (Supabase Realtime)**
-   - Integrasikan `supabase.channel` ke `TheVoid.jsx`.
-   - Gunakan fitur `broadcast` untuk mengirim event "Hug" antar klien.
-   - Gunakan fitur `presence` untuk menghitung jumlah *user* yang sedang menatap The Void.
-
-3. **AI Memory Store (Zustand)**
-   - Buat `src/store/useChatStore.js` menggunakan *persist middleware*.
-   - Simpan `aiMemory` (ringkasan 1 kalimat) dan `chatHistory` harian.
-
-4. **Bilik Konsultasi (Summary Logic)**
-   - Tambahkan tombol "Akhiri Sesi & Simpan Ingatan".
-   - Saat diklik, panggil API OpenRouter dengan *prompt* khusus untuk men- *generate* kesimpulan 1 kalimat berdasarkan riwayat chat hari itu.
-   - Simpan kesimpulan tersebut ke `useChatStore`.
-
-5. **Bilik Konsultasi (Context Injection)**
-   - Saat halaman dibuka keesokan harinya, masukkan `aiMemory` dari Zustand ke dalam *System Prompt* utama OpenRouter.
+## 3. Checkpoint Verifikasi
+- Aplikasi dimuat untuk hari pertama.
+- Layar tertutup balok hitam interogasi.
+- Ketik "asdasdasdasd", klik simpan -> Ditolak karena kurang spasi.
+- Ketik "Aku mau belajar matriks hari ini", klik simpan -> Lolos, aplikasi terbuka.

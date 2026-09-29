@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Send } from 'lucide-react';
 import { useChatStore } from '../store/useChatStore';
 
@@ -60,7 +60,7 @@ export default function BilikKonsultasi() {
       }
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', text: `Maaf ya, sistemku lagi error: ${error.message}` }]);
+      setMessages(prev => [...prev, { role: 'assistant', text: `MAAF, SISTEM ERROR: ${error.message}` }]);
     } finally {
       setIsLoading(false);
     }
@@ -98,12 +98,12 @@ export default function BilikKonsultasi() {
         setIsEndingSession(true);
         setTimeout(() => {
           setIsEndingSession(false);
-          setMessages([{ role: 'assistant', text: `[Sesi Diakhiri. Ingatan disimpan: "${memory}"] Sampai jumpa besok!` }]);
+          setMessages([{ role: 'assistant', text: `[SESI DIAKHIRI. INGATAN DISIMPAN: "${memory}"] SAMPAI JUMPA BESOK!` }]);
         }, 2000);
       }
     } catch (error) {
       console.error(error);
-      alert("Gagal mengakhiri sesi: " + error.message);
+      alert("GAGAL MENGAKHIRI SESI: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -113,43 +113,45 @@ export default function BilikKonsultasi() {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto relative"
     >
       <AnimatePresence>
         {isEndingSession && (
           <motion.div 
-            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-stone-950/60 rounded-xl"
+            className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-950/90"
           >
             <motion.div 
               initial={{ scale: 0.8, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
-              className="flex flex-col items-center bg-stone-900 border border-stone-800 p-8 rounded-2xl shadow-2xl"
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="flex flex-col items-center bg-white border-8 border-zinc-950 p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-md w-full"
             >
-              <span className="text-4xl mb-4 animate-pulse">🧠</span>
-              <h3 className="text-xl font-bold text-stone-100">Memori Disimpan</h3>
-              <p className="text-sm text-stone-400 mt-2 text-center">AI akan mengingat<br/>percakapan ini besok.</p>
+              <span className="text-6xl mb-6">🧠</span>
+              <h3 className="text-3xl font-black text-zinc-950 uppercase tracking-tighter mb-2">MEMORI DISIMPAN</h3>
+              <p className="text-sm text-zinc-600 font-mono font-bold uppercase tracking-widest text-center leading-relaxed">
+                AI AKAN MENGINGAT<br/>PERCAKAPAN INI BESOK.
+              </p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="mb-6 border-b border-stone-800 pb-4 flex justify-between items-end">
+      <div className="mb-6 border-b-8 border-zinc-950 pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-stone-100">Bilik Konsultasi</h2>
-          <p className="text-sm text-stone-400">Privat. AI ini diinstruksikan untuk berempati, bukan menggurui.</p>
+          <h2 className="text-4xl font-black tracking-tighter text-zinc-950 uppercase">Bilik Konsultasi</h2>
+          <p className="text-sm font-mono font-bold uppercase tracking-widest text-zinc-500 mt-1">PRIVAT. BEREMPATI, BUKAN MENGGURUI.</p>
         </div>
         <button 
           onClick={handleEndSession}
           disabled={isLoading || messages.length <= 1}
-          className="text-xs px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded border border-stone-700 active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50"
+          className="text-xs px-4 py-2 bg-white hover:bg-zinc-950 text-zinc-950 hover:text-white font-black uppercase tracking-widest border-4 border-zinc-950 active:scale-[0.97] transition-all disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300"
         >
-          Akhiri Sesi & Simpan
+          AKHIRI SESI & SIMPAN
         </button>
       </div>
 
@@ -163,10 +165,10 @@ export default function BilikKonsultasi() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div 
-              className={`max-w-[85%] rounded-2xl px-5 py-3.5 leading-relaxed
+              className={`max-w-[85%] px-6 py-4 font-mono font-bold uppercase leading-relaxed text-sm md:text-base border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
                 ${msg.role === 'user' 
-                  ? 'bg-stone-400 text-stone-950 font-medium' 
-                  : 'bg-stone-900 border border-stone-800 text-stone-200'
+                  ? 'bg-zinc-950 text-white' 
+                  : 'bg-white text-zinc-950'
                 }`}
             >
               {msg.text}
@@ -180,31 +182,31 @@ export default function BilikKonsultasi() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="flex justify-start"
           >
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl px-5 py-3.5 flex gap-1">
-              <span className="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce"></span>
-              <span className="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-              <span className="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+            <div className="bg-white border-4 border-zinc-950 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-6 py-4 flex gap-2">
+              <span className="w-3 h-3 bg-zinc-950 animate-bounce"></span>
+              <span className="w-3 h-3 bg-zinc-950 animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+              <span className="w-3 h-3 bg-zinc-950 animate-bounce" style={{ animationDelay: '0.4s' }}></span>
             </div>
           </motion.div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="relative mt-auto shrink-0">
+      <form onSubmit={handleSubmit} className="relative mt-auto shrink-0 flex gap-2">
         <input 
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ceritain, lagi ngerasa apa sekarang?"
-          className="w-full bg-stone-900 border border-stone-800 rounded-full px-6 py-4 pr-14 focus:outline-none focus:ring-2 focus:ring-stone-600 text-stone-100 placeholder-stone-500 transition-all"
+          placeholder="CERITAIN, LAGI NGERASA APA SEKARANG?"
+          className="flex-1 bg-white border-4 border-zinc-950 px-6 py-4 focus:outline-none focus:bg-zinc-50 text-zinc-950 font-mono font-bold uppercase placeholder-zinc-400 transition-colors"
           disabled={isLoading}
         />
         <button 
           type="submit"
           disabled={!input.trim() || isLoading}
-          className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-stone-400 hover:bg-stone-300 text-stone-950 rounded-full active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50"
+          className="aspect-square flex items-center justify-center bg-zinc-950 hover:bg-zinc-800 text-white border-4 border-zinc-950 px-6 active:scale-[0.97] transition-all disabled:opacity-50"
         >
-          <Send className="w-4 h-4 ml-[-2px]" />
+          <Send className="w-6 h-6" strokeWidth={3} />
         </button>
       </form>
     </motion.div>
