@@ -4,6 +4,7 @@ import { useAppStore } from '../store/useAppStore';
 import { X, BookOpen, AlertTriangle } from 'lucide-react';
 import HabitHeatmap from '../components/HabitHeatmap';
 import SoundscapeMixer from '../components/SoundscapeMixer';
+import CommandCockpit from '../components/CommandCockpit';
 
 const CHEAT_SHEETS = [
   {
@@ -168,6 +169,9 @@ export default function LockerRoom() {
       }}
       className="space-y-12"
     >
+      {/* Real-time Deficit Command Cockpit */}
+      <CommandCockpit />
+
       {bloodOath && (
         <motion.div 
           variants={{

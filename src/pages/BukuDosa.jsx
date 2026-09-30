@@ -14,10 +14,12 @@ import {
   Eye,
   EyeOff,
   Filter,
-  Check
+  Check,
+  BrainCircuit
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
+import ErrorTaxonomyModal from '../components/ErrorTaxonomyModal';
 
 export default function BukuDosa() {
   const errorLog = useAppStore(state => state.errorLog) || [];
@@ -30,6 +32,7 @@ export default function BukuDosa() {
   const [selectedSubject, setSelectedSubject] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL' | 'unresolved' | 'redeemed'
   const [expandedExplanations, setExpandedExplanations] = useState({});
+  const [taxonomyModalError, setTaxonomyModalError] = useState(null);
 
   // Gauntlet (Tebus Dosa Quiz) State
   const [gauntletIndex, setGauntletIndex] = useState(0);
@@ -44,6 +47,15 @@ export default function BukuDosa() {
   const unresolvedCount = unresolvedErrors.length;
   const redeemedCount = redeemedErrors.length;
   const redemptionRate = totalErrors > 0 ? Math.round((redeemedCount / totalErrors) * 100) : 0;
+
+  // Smart Trap Taxonomy Calculations
+  const blindSpotCount = errorLog.filter(e => e.taxonomy === 'BLIND_SPOT').length;
+  const rushErrorCount = errorLog.filter(e => e.taxonomy === 'RUSH_ERROR').length;
+  const timePanicCount = errorLog.filter(e => e.taxonomy === 'TIME_PANIC').length;
+  const taggedCount = blindSpotCount + rushErrorCount + timePanicCount;
+  const blindSpotPct = taggedCount > 0 ? Math.round((blindSpotCount / taggedCount) * 100) : 0;
+  const rushErrorPct = taggedCount > 0 ? Math.round((rushErrorCount / taggedCount) * 100) : 0;
+  const timePanicPct = taggedCount > 0 ? Math.round((timePanicCount / taggedCount) * 100) : 0;
 
   // Filtered List
   const filteredErrors = errorLog.filter(item => {
@@ -125,6 +137,56 @@ export default function BukuDosa() {
             <span className="text-2xl md:text-3xl font-black text-amber-400">{redemptionRate}%</span>
           </div>
         </div>
+
+        {/* Smart Trap Matrix Widget */}
+        {totalErrors > 0 && (
+          <div className="bg-zinc-900 border-2 border-zinc-800 p-4 mt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+              <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                <BrainCircuit className="w-3.5 h-3.5" />
+                SMART TRAP MATRIX // DISTRIBUSI AKAR KESALAHAN ({taggedCount}/{totalErrors} TERTANDAI)
+              </span>
+              <span className="text-[9px] text-zinc-400 uppercase font-bold">
+                {taggedCount === 0 ? 'Belum ada soal yang dilabeli akar masalah' :
+                 rushErrorPct >= 40 ? '⚠️ Dominan: Ceroboh / Terburu-buru' :
+                 blindSpotPct >= 40 ? '⚠️ Dominan: Buta Konsep Dasar' :
+                 timePanicPct >= 40 ? '⚠️ Dominan: Terjebak Waktu' : 'Kombinasi Faktor'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="bg-zinc-950 border border-red-900/60 p-2.5">
+                <div className="flex justify-between text-[10px] font-black uppercase text-red-400 mb-1">
+                  <span>[BLIND_SPOT] BUTA KONSEP</span>
+                  <span>{blindSpotPct}% ({blindSpotCount})</span>
+                </div>
+                <div className="w-full bg-zinc-800 h-2 border border-zinc-700">
+                  <div className="bg-red-600 h-full transition-all" style={{ width: `${blindSpotPct}%` }}></div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950 border border-amber-900/60 p-2.5">
+                <div className="flex justify-between text-[10px] font-black uppercase text-amber-400 mb-1">
+                  <span>[RUSH_ERROR] CEROBOH</span>
+                  <span>{rushErrorPct}% ({rushErrorCount})</span>
+                </div>
+                <div className="w-full bg-zinc-800 h-2 border border-zinc-700">
+                  <div className="bg-amber-500 h-full transition-all" style={{ width: `${rushErrorPct}%` }}></div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950 border border-zinc-800 p-2.5">
+                <div className="flex justify-between text-[10px] font-black uppercase text-zinc-300 mb-1">
+                  <span>[TIME_PANIC] PANIK WAKTU</span>
+                  <span>{timePanicPct}% ({timePanicCount})</span>
+                </div>
+                <div className="w-full bg-zinc-800 h-2 border border-zinc-700">
+                  <div className="bg-zinc-400 h-full transition-all" style={{ width: `${timePanicPct}%` }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mode Switch Tabs & Action */}
@@ -276,6 +338,20 @@ export default function BukuDosa() {
                               // {item.subtopic}
                             </span>
                           )}
+
+                          {/* 3-Label Taxonomy Selector Trigger */}
+                          <button
+                            onClick={() => setTaxonomyModalError(item)}
+                            className={`px-2 py-0.5 text-[9px] font-black uppercase border cursor-pointer active:scale-95 transition-transform ${
+                              item.taxonomy === 'BLIND_SPOT' ? 'bg-red-100 text-red-700 border-red-500 font-black' :
+                              item.taxonomy === 'RUSH_ERROR' ? 'bg-amber-100 text-amber-800 border-amber-500 font-black' :
+                              item.taxonomy === 'TIME_PANIC' ? 'bg-zinc-200 text-zinc-800 border-zinc-500 font-black' :
+                              'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 border-zinc-400'
+                            }`}
+                            title="Klik untuk mendiagnosis akar kesalahan"
+                          >
+                            {item.taxonomy ? `[ ${item.taxonomy} ]` : '+ LABELI AKAR MASALAH'}
+                          </button>
                         </div>
 
                         <div className="flex items-center gap-3">
@@ -527,6 +603,13 @@ export default function BukuDosa() {
           )}
         </div>
       )}
+
+      {/* 3-Label Cognitive Root Cause Taxonomy Modal */}
+      <ErrorTaxonomyModal
+        isOpen={!!taxonomyModalError}
+        onClose={() => setTaxonomyModalError(null)}
+        targetError={taxonomyModalError}
+      />
     </div>
   );
 }

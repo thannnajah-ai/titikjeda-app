@@ -120,6 +120,11 @@ export const useAppStore = create(
         errorLog: state.errorLog.filter((item) => item.id !== id)
       })),
       clearErrorLog: () => set({ errorLog: [] }),
+      assignErrorTaxonomy: (id, taxonomy) => set((state) => ({
+        errorLog: state.errorLog.map((item) =>
+          item.id === id ? { ...item, taxonomy } : item
+        )
+      })),
 
       // Spartan Target & PTN Goal
       targetPTN: 'STEI ITB - REKAYASA PERANGKAT LUNAK',
